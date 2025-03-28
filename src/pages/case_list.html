@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Case List</title>
+    <link rel="stylesheet" href="../../css/case_list.css">
+</head>
+<body>
+
+    <div class="container">
+        <!-- 左侧主列表 -->
+        <div class="case-list">
+            <div class="case-header">
+                <button class="notifications">🔔 NOTIFICATIONS</button>
+                <div class="filter">
+                    <label for="filter-status">FILTER BY STATUS</label>
+                    <select id="filter-status" class="status-dropdown">
+                        <option value="all">ALL</option>
+                        <option value="draft">DRAFT</option>
+                        <option value="pending">PENDING REVIEW</option>
+                        <option value="reviewed">REVIEWED</option>
+                        <option value="fabricated">FABRICATED</option>
+                        <option value="framework_try_in">FRAMEWORK TRY IN</option>
+                        <option value="teeth_set_up">TEETH SET UP</option>
+                        <option value="teeth_try_in">TEETH TRY IN</option>
+                        <option value="completed">COMPLETED</option>
+                    </select>
+                </div>                
+                <button class="create-case">CREATE NEW CASE</button>
+                <button class="refresh">⟳ REFRESH</button>
+                <button class="logout">LOGOUT</button> 
+            </div>
+
+            <!-- <div class="case-tabs">
+                <button class="active">FOR CLINICIAN</button>
+                <button>FOR LAB</button>
+            </div> -->
+
+            <!-- 表头独立 -->
+            <table class="case-table">
+                <thead>
+                <tr>
+                    <th class="sortable" data-sort="case_id" style="width: 20%;">CASE NAME</th>
+                    <th class="sortable" data-sort="creation_date" style="width: 20%;">DATE CREATED</th>
+                    <th class="sortable" data-sort="expected_date" style="width: 20%;">DATE EXPECTED</th>
+                    <th class="sortable" data-sort="username" style="width: 20%;">CASE OWNER</th>
+                    <th class="sortable" data-sort="status" style="width: 22%;">CURRENT STATUS</th>
+                </tr>
+                </thead>
+            </table>
+            
+            <!-- 滚动区域只包含 tbody -->
+            <div class="table-body-wrapper">
+                <table class="case-table">
+                <tbody>
+                    <!-- JS 动态填充 -->
+                </tbody>
+                </table>
+            </div>
+  
+                    
+        </div>
+
+        <!-- 右侧详情区域 -->
+        <div class="case-details">
+            <div class="case-actions">
+                <button class="mark-important">⭐ MARK AS IMPORTANT</button>
+                <button class="mark-unread">🟢 UNREAD</button>
+            </div>
+
+            <div class="case-thumbnail">
+                <img id="caseImage">
+            </div>
+            <div class="image-navigation">
+                <button id="prevBtn">◀</button>
+                <span id="imageCounter">IMAGE 0 OF 0</span>
+                <button id="nextBtn">▶</button>
+            </div>
+            
+            
+            
+
+            <button class="case-dashboard">CASE DASHBOARD</button>
+
+            <div class="case-info">
+                <label for="status">STATUS:</label>
+                <select id="status">
+                    <option value="draft">DRAFT</option>
+                    <option value="pending">PENDING REVIEW</option>
+                    <option value="reviewed">REVIEWED</option>
+                    <option value="fabricated">FABRICATED</option>
+                    <option value="framework_try_in">FRAMEWORK TRY IN</option>
+                    <option value="teeth_set_up">TEETH SET UP</option>
+                    <option value="teeth_try_in">TEETH TRY IN</option>
+                    <option value="completed">COMPLETED</option>
+                </select>
+            
+                <p>CASE NAME: <span id="selected-case"></span></p>
+                <p>CREATED BY: <span id="created-by"></span></p>
+                <p>DATE CREATED: <span id="date-created"></span></p>
+                <p>LAST EDITED: <span id="last-edited"></span></p>
+            </div>
+            
+
+            <div class="start-case-container">
+                <button class="start-case-button">START CASE</button>
+                <div class="divider"></div> <!-- 这是新增的直线元素 -->
+                <button class="start-case-toggle">☰</button>
+            </div>
+            
+            
+            
+        </div>
+    </div>
+
+    <script src="../js/caseManagement.js"></script>
+    <script>
+        document.querySelector(".logout").addEventListener("click", () => {
+            localStorage.removeItem("loggedInUser"); // 清除登录信息
+            window.location.href = "login.html"; // 跳转回登录页
+        });
+    </script>
+</body>
+</html>
