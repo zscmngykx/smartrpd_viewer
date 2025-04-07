@@ -33,7 +33,7 @@ async function login() {
                 isAdmin: data.isAdmin
             };
             localStorage.setItem("loggedInUser", JSON.stringify(userInfo));
-            window.location.href = "../pages/case_list.html";
+            window.location.href = "./src/pages/case_list.html";
         } else {
             errorMessage.textContent = "Login failed. Please check your username and password.";
         }

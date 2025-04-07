@@ -110,6 +110,11 @@ button:hover {
     cursor: pointer;
 }
 
+.case-table tbody tr.active {
+    background: rgba(21, 101, 192, 0.2);
+}
+
+
 
 /* Add a pointer cursor and hover effect to enhance user experience */
 /* Add a pointer cursor and hover effect to enhance user experience */
@@ -343,3 +348,10 @@ button:hover {
     outline: none;
     border-color: #88abda;
 }
+
+
+  
+    
+  
+  
+   

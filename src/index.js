@@ -18,14 +18,13 @@ import { addResetButton } from './resetButton.js';
 import {lol} from './crypt.js';
 
 //initialise everything
-
-
-
 let all_mesh_mat = {};
 window.finished = false;
 
 // Get the current URL
 const url = new URL(window.location.href);
+console.log("🧩 Current URL:", url.href);
+console.log("🧩 Extracted id:", url.searchParams.get("id"));
 
 // Get the value of a specific query parameter, e.g., "param"
 let paramValue = url.searchParams.get('id');
@@ -101,7 +100,7 @@ scene.add(parentObject);
   // this for the undercut upper and the main json data use to retrieve stuff
   const data = {
     machine_id: '3a0df9c37b50873c63cebecd7bed73152a5ef616',
-	uuid: 'AC4gRQXZJoNz9EhhW36Q8jMJXBsf',
+	  uuid: 'AC4gRQXZJoNz9EhhW36Q8jMJXBsf',
     //uuid: 'eOqJe2FpjqdECy25l0KuJkH2cPQm', // dev server acc uuid
     case_int_id: paramValue,
     jaw_type: 2,
@@ -483,16 +482,6 @@ let name_of_mesh;
 
 
   // Example usage
-
-
-
-
-
-
-
-
-
-
   function createTextbox(text, position) {
     const textbox = document.createElement('div');
     textbox.textContent = text;
@@ -781,3 +770,74 @@ document.addEventListener('wheel', wheelHandler, { passive: false });
 function isObject(variable) {
   return variable !== null && typeof variable === 'object';
 }
+
+window.addEventListener("load", () => {
+  const fixToothMapPosition = () => {
+    const allButtons = document.getElementsByTagName("button");
+    for (let btn of allButtons) {
+      const img = btn.querySelector("img");
+
+      if (img && img.src.startsWith("data:image/png;base64")) {
+        // ✅ 精确对齐 Rotation 下方 + 放大
+        btn.style.position = "fixed";
+        btn.style.top = "180px";
+        btn.style.right = "15px";
+        btn.style.width = "140px";
+        btn.style.height = "auto";
+        btn.style.padding = "0";
+        btn.style.border = "none";
+        btn.style.background = "none";
+        btn.style.cursor = "pointer";
+        btn.style.zIndex = "1000";
+
+        img.style.width = "100%";
+        img.style.height = "auto";
+        img.style.transform = "none";
+        img.style.display = "block";
+
+        return true;
+      }
+    }
+    return false;
+  };
+
+  const interval = setInterval(() => {
+    if (fixToothMapPosition()) {
+      clearInterval(interval);
+    }
+  }, 200);
+});
+
+window.addEventListener("load", () => {
+  const interval = setInterval(() => {
+    const allButtons = document.getElementsByTagName("button");
+
+    for (let btn of allButtons) {
+      const img = btn.querySelector("img");
+
+      if (img && img.src.startsWith("data:image/png")) {
+        if (!btn.hasAttribute("data-zoom-bound")) {
+          btn.setAttribute("data-zoom-bound", "true");
+
+          btn.addEventListener("click", () => {
+            const overlayDivs = document.querySelectorAll("div[style*='position: fixed']");
+            for (let div of overlayDivs) {
+              const popupImg = div.querySelector("img");
+              if (popupImg && popupImg.src.startsWith("data:image/png")) {
+                popupImg.style.maxWidth = "80vw";
+                popupImg.style.maxHeight = "80vh";
+                popupImg.style.width = "auto";
+                popupImg.style.height = "auto";
+                break;
+              }
+            }
+          });
+        }
+
+        clearInterval(interval);
+        break;
+      }
+    }
+  }, 300);
+});
+

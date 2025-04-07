@@ -74,7 +74,7 @@ if(check){
   geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
   material_array.push(geometry.clone());
   //setting occulsion color
-  if('occlusion_values' in surface){
+  if(surface?.occlusion_values?.data){
         const buffer = surface.occlusion_values.data;
       // Convert byte array to Uint8Array
     const uint8Array = new Uint8Array(buffer);

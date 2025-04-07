@@ -83,7 +83,7 @@ export function addResetButton(camera, clone, controls) {
 
     // Create the icon
     const resetIcon = document.createElement('img');
-    resetIcon.src = 'reset.png'; // Replace with the path to your icon
+    resetIcon.src = '/reset.png'; // Replace with the path to your icon
     resetIcon.alt = 'Reset';
     resetIcon.id = 'reset-icon';
 
@@ -159,8 +159,8 @@ export function addResetButton(camera, clone, controls) {
 
     // Function to update lock rotation button image based on current state
     function updateLockRotationButtonImage() {
-        const lockedImageUrl = 'lock.png'; // Replace with your locked image path
-        const unlockedImageUrl = 'unlock.png'; // Replace with your unlocked image path
+        const lockedImageUrl = '/lock.png'; // Replace with your locked image path
+        const unlockedImageUrl = '/unlock.png'; // Replace with your unlocked image path
         const imageUrl = rotationLocked ? lockedImageUrl : unlockedImageUrl;
 
         // Clear existing content

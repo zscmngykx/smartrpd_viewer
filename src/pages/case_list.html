@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=1024">
     <title>Case List</title>
     <link rel="stylesheet" href="../../css/case_list.css">
 </head>
@@ -114,12 +114,12 @@
         </div>
     </div>
 
-    <script src="../js/caseManagement.js"></script>
+    <script type="module" src="../js/caseManagement.js"></script>
     <script>
         document.querySelector(".logout").addEventListener("click", () => {
             localStorage.removeItem("loggedInUser"); // 清除登录信息
-            window.location.href = "login.html"; // 跳转回登录页
+            window.location.href = "../../index.html"; 
         });
-    </script>
+    </script>  
 </body>
 </html>

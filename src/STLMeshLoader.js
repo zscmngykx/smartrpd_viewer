@@ -30,7 +30,7 @@ class STLMeshLoader {
         geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
         material_array.push(geometry.clone());
         if(surface!='stl'){
-        if('occlusion_values' in surface){
+        if(surface?.occlusion_values?.data){
 
 
               const buffer = surface.occlusion_values.data;

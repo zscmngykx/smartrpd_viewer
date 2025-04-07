@@ -1,4 +1,6 @@
-// 获取登录用户
+import { lol } from '../crypt.js';
+
+
 function getLoggedInUser() {
     const user = localStorage.getItem("loggedInUser");
     return user ? JSON.parse(user) : null;
@@ -10,7 +12,7 @@ let currentCases = [];
 
 let currentThumbnails = [];
 let currentImageIndex = 0;
-
+window.selectedCaseId = null;
 // 获取用户的病例列表
 async function fetchCases() {
     const loggedInUser = getLoggedInUser();
@@ -58,13 +60,28 @@ function populateTable(cases) {
             <td style="width: 20%;">${caseItem.username || "N/A"}</td>
             <td style="width: 20%;">${caseItem.status || "N/A"}</td>
         `;
-        row.addEventListener("click", () => handleRowClick(caseItem.id));
+
+        // 绑定点击：触发 handleRowClick 并设置高亮
+        row.addEventListener("click", () => {
+            handleRowClick(caseItem.id);
+
+            // 清除其他行的 active 状态
+            const allRows = tbody.querySelectorAll("tr");
+            allRows.forEach(r => r.classList.remove("active"));
+
+            // 当前行加上 active
+            row.classList.add("active");
+        });
+
         tbody.appendChild(row);
     });
 }
 
+
 // 点击某一行时获取病例详情
 async function handleRowClick(caseId) {
+    window.selectedCaseId = caseId;
+    console.log("🔹 Selected case ID:", caseId);
     const loggedInUser = getLoggedInUser();
     if (!loggedInUser || !caseId) return;
 
@@ -91,6 +108,10 @@ async function handleRowClick(caseId) {
     } catch (err) {
         console.error("❌ Failed to get case detail:", err);
     }
+    if (window.innerWidth <= 768) {
+        document.querySelector(".container")?.classList.add("show-details");
+      }
+      
 }
 
 // 显示基本信息
@@ -213,10 +234,12 @@ async function fetchThumbnails(caseId) {
 document.addEventListener('DOMContentLoaded', async () => {
     updateThumbnail();
     const cases = await fetchCases();
+
     if (cases) {
         currentCases = cases;
         populateTable(cases);
 
+        // 排序逻辑绑定
         document.querySelectorAll(".sortable").forEach(th => {
             th.addEventListener("click", () => {
                 const sortKey = th.dataset.sort;
@@ -231,6 +254,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         });
 
+        // 缩略图切换按钮绑定
         document.getElementById("prevBtn").addEventListener("click", () => {
             if (currentThumbnails.length > 0) {
                 currentImageIndex = (currentImageIndex - 1 + currentThumbnails.length) % currentThumbnails.length;
@@ -245,4 +269,24 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
     }
+
+    // ✅ START CASE 按钮绑定逻辑（使用 class 绑定方案 B）
+    const startBtn = document.querySelector(".start-case-button");
+    if (startBtn) {
+        startBtn.addEventListener("click", () => {
+            const caseId = window.selectedCaseId;
+            console.log("🔹 Selected case ID:", caseId);
+
+            if (!caseId) {
+                alert("⚠️ Please select a case first.");
+                return;
+            }
+
+            const encryptedId = lol(caseId);
+            const targetURL = `${window.location.origin}/src/pages/ThreeDViewer/?id=${encryptedId}`;
+            console.log("🚀 Jumping to:", targetURL);
+            window.open(targetURL, "_blank");
+        });
+    }
 });
+

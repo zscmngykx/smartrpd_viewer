@@ -90,3 +90,21 @@ button:hover {
     color: red;
     font-size: 14px;
 }
+
+/* ✅ 最小适配，只处理移动端基础问题 */
+@media (max-width: 768px) {
+    .login_msg {
+      width: 100%;
+      max-width: 400px;
+      margin: 0 auto;           /* ✅ 让 .login_msg 居中 */
+      padding: 0 10px;
+      box-sizing: border-box;
+    }
+  
+    input,
+    button {
+      width: 100%;
+      box-sizing: border-box;
+    }
+  }
+  
