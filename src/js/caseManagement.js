@@ -283,9 +283,17 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
 
             const encryptedId = lol(caseId);
-            const targetURL = `${window.location.origin}/src/pages/ThreeDViewer/?id=${encryptedId}`;
-            console.log("🚀 Jumping to:", targetURL);
-            window.open(targetURL, "_blank");
+
+// 判断是否是 GitHub Pages（含仓库名路径）
+        const isGitHubPages = window.location.hostname.includes("github.io");
+        const basePath = isGitHubPages ? `/${window.location.pathname.split("/")[1]}` : "";
+
+        const targetURL = `${window.location.origin}${basePath}/src/pages/ThreeDViewer/?id=${encryptedId}`;
+
+        console.log("🚀 Jumping to:", targetURL);
+        window.open(targetURL, "_blank");
+
+            
         });
     }
 });
