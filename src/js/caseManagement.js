@@ -289,7 +289,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             // 如果是 GitHub Pages，就加上 repo name，其他情况如 localhost 则不加
             const basePath = isGitHubPages ? `/${window.location.pathname.split("/")[1]}` : "";
             
-            const targetURL = `${window.location.origin}${basePath}/src/pages/ThreeDViewer.html?id=${encryptedId}`;
+            const targetURL = `${window.location.origin}${basePath}/src/pages/ThreeDViewer.html/?id=${encryptedId}`;
             window.open(targetURL, "_blank");
             
         });
