@@ -288,5 +288,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             window.open(targetURL, "_blank");
         });
     }
+    const encryptedId = lol(caseId);
+    const isGitHubPages = window.location.hostname.includes("github.io");
+    const basePath = isGitHubPages ? "/smartrpd_viewer" : "";
+    const targetURL = `${window.location.origin}${basePath}/ThreeDViewer.html?id=${encryptedId}`;
+    console.log("🚀 Jumping to:", targetURL);
+    window.open(targetURL, "_blank");
+
 });
 
