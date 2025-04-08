@@ -6,6 +6,19 @@ function getLoggedInUser() {
     return user ? JSON.parse(user) : null;
 }
 
+const basePath = window.location.hostname.includes("github.io") ? "/smartrpd_viewer" : "";
+
+// 自动劫持所有 <img>.src 赋值行为
+Object.defineProperty(HTMLImageElement.prototype, 'src', {
+  set(value) {
+    const fullPath = value.startsWith("/") || value.startsWith("http") || value.includes(basePath)
+      ? value
+      : `${basePath}/${value}`;
+    this.setAttribute('src', fullPath);
+  }
+});
+
+
 let currentSortColumn = null;
 let currentSortOrder = 'asc';
 let currentCases = [];
