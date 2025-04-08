@@ -6,10 +6,6 @@ function getLoggedInUser() {
     return user ? JSON.parse(user) : null;
 }
 
-const basePath = window.location.hostname.includes("github.io") ? "/smartrpd_viewer" : "";
-
-// 自动劫持所有 <img>.src 赋值行为
-
 let currentSortColumn = null;
 let currentSortOrder = 'asc';
 let currentCases = [];
