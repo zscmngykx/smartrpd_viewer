@@ -4,7 +4,7 @@
     
     <meta charset="utf-8" />
     <title>SmartRPD Web Lite</title>
-    <link rel="stylesheet" href="/css/style.css" />
+    <!-- <link rel="stylesheet" href="/css/style.css" /> -->
     <style>
       /* Default styles for the loading bar */
       .loading-container {
@@ -98,7 +98,18 @@
       window.addEventListener('orientationchange', checkOrientation);
     </script>-->
     <!--<script src="./script.js"></script>-->
-    <script type="module" src="/src/index.js"></script>
-    <script type="module" src="/dist/bundle.js"></script>
+    <!-- <script type="module" src="/src/index.js"></script>
+    <script type="module" src="/dist/bundle.js"></script> -->
+    <script>
+      const isGitHubPages = window.location.hostname.includes("github.io");
+      const basePath = isGitHubPages ? "/smartrpd_viewer" : "";
+    
+      document.write(`
+        <link rel="stylesheet" href="${basePath}/css/style.css" />
+        <script type="module" src="${basePath}/src/index.js"></` + `script>
+        <script type="module" src="${basePath}/dist/bundle.js"></` + `script>
+      `);
+    </script>
+    
   </body>
 </html>
