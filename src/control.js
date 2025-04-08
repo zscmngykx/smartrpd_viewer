@@ -100,28 +100,22 @@ function addVisibilityAndTransparencyControls(parentObject, name, material_array
 
             // Replace folder title with icon
             let iconPath;
-            if(child.name.includes('surface'))
-            {
-                if(child.name.includes('lower'))
-                {
-                    iconPath ='/Icon_LowerJaw.png';
+            const basePath = window.location.hostname.includes("github.io") ? "/smartrpd_viewer" : "";
+
+            if (child.name.includes('surface')) {
+                if (child.name.includes('lower')) {
+                    iconPath = `${basePath}/Icon_LowerJaw.png`;
+                } else if (child.name.includes('upper')) {
+                    iconPath = `${basePath}/Icon_UpperJaw.png`;
                 }
-                else if(child.name.includes('upper'))
-                    {
-                        iconPath = '/Icon_UpperJaw.png';
-                    }
+            } else {
+                if (child.name.includes('lower')) {
+                    iconPath = `${basePath}/Icon_LowerJaw_Occlusal.png`;
+                } else if (child.name.includes('upper')) {
+                    iconPath = `${basePath}/Icon_UpperJaw_Occlusal.png`;
+                }
             }
-            else
-            {
-                if(child.name.includes('lower'))
-                    {
-                        iconPath = '/Icon_LowerJaw_Occlusal.png';
-                    }
-                else if(child.name.includes('upper'))
-                        {
-                            iconPath = '/Icon_UpperJaw_Occlusal.png';
-                        }
-            }
+
 
             const title = folder.domElement.querySelector('.title');
             title.innerHTML = `<span class="icon" style="background-image: url('${iconPath}');"></span>`;

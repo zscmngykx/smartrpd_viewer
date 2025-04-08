@@ -161,8 +161,11 @@ export function addResetButton(camera, clone, controls) {
 
     // Function to update lock rotation button image based on current state
     function updateLockRotationButtonImage() {
-        const lockedImageUrl = '/lock.png'; // Replace with your locked image path
-        const unlockedImageUrl = '/unlock.png'; // Replace with your unlocked image path
+        const basePath = window.location.hostname.includes("github.io") ? "/smartrpd_viewer" : "";
+
+        const lockedImageUrl = `${basePath}/lock.png`;    // Replace with your locked image path
+        const unlockedImageUrl = `${basePath}/unlock.png`;
+ // Replace with your unlocked image path
         const imageUrl = rotationLocked ? lockedImageUrl : unlockedImageUrl;
 
         // Clear existing content
