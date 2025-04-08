@@ -21,6 +21,8 @@ import {lol} from './crypt.js';
 let all_mesh_mat = {};
 window.finished = false;
 
+const basePath = window.location.hostname.includes("github.io") ? "/smartrpd_viewer" : "";
+
 Object.defineProperty(HTMLImageElement.prototype, 'src', {
   set(value) {
     const fullPath = value.startsWith("/") || value.startsWith("http") || value.includes(basePath)
