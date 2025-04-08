@@ -283,15 +283,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
 
             const encryptedId = lol(caseId);
-
-            // 判断是否是 GitHub Pages
-            const isGitHubPages = window.location.hostname.includes("github.io");
-            // 如果是 GitHub Pages，就加上 repo name，其他情况如 localhost 则不加
-            const basePath = isGitHubPages ? `/${window.location.pathname.split("/")[1]}` : "";
-            
-            const targetURL = `${window.location.origin}${basePath}/src/pages/ThreeDViewer.html/?id=${encryptedId}`;
+            const targetURL = `${window.location.origin}/src/pages/ThreeDViewer.html/?id=${encryptedId}`;
+            console.log("🚀 Jumping to:", targetURL);
             window.open(targetURL, "_blank");
-            
         });
     }
 });
