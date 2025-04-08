@@ -21,6 +21,14 @@ import {lol} from './crypt.js';
 let all_mesh_mat = {};
 window.finished = false;
 
+Object.defineProperty(HTMLImageElement.prototype, 'src', {
+  set(value) {
+    const fullPath = value.startsWith("/") || value.startsWith("http") || value.includes(basePath)
+      ? value
+      : `${basePath}/${value}`;
+    this.setAttribute('src', fullPath);
+  }
+});
 // Get the current URL
 const url = new URL(window.location.href);
 console.log("🧩 Current URL:", url.href);
