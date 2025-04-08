@@ -287,15 +287,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             // console.log("🚀 Jumping to:", targetURL);
             // window.open(targetURL, "_blank");
             const encryptedId = lol(caseId);
-            const isGitHubPages = window.location.hostname.includes("github.io");
-            const isLocal = window.location.hostname === "localhost";
+        const isGitHubPages = window.location.hostname.includes("github.io");
+        const isLocal = window.location.hostname === "localhost";
 
-            // 本地要用 .html/?id=xxx，GitHub 要用 .html?id=xxx
-            const queryConnector = isLocal ? "/?" : "?";
-            const basePath = isGitHubPages ? "/smartrpd_viewer" : "";
+        // 本地要用 .html/?id=xxx，GitHub 要用 .html?id=xxx
+        const queryConnector = isLocal ? "/?" : "?";
+        const basePath = isGitHubPages ? "/smartrpd_viewer" : "";
 
-            const targetURL = `${window.location.origin}${basePath}/ThreeDViewer.html${queryConnector}id=${encryptedId}`;
-            window.open(targetURL, "_blank");
+        const targetURL = `${window.location.origin}${basePath}/ThreeDViewer.html${queryConnector}id=${encryptedId}`;
+        window.open(targetURL, "_blank");
 
 
         });
