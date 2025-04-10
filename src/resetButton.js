@@ -84,7 +84,7 @@ export function addResetButton(camera, clone, controls) {
     // Create the icon
     const resetIcon = document.createElement('img');
     const basePath = window.location.hostname.includes("github.io") ? "/smartrpd_viewer" : "";
-    resetIcon.src = `${basePath}/reset.png`; // Replace with the path to your icon
+    resetIcon.src = `${basePath}/assets/reset.png`; // Replace with the path to your icon
     // resetIcon.src = '/reset.png'; // Replace with the path to your icon
     resetIcon.alt = 'Reset';
     resetIcon.id = 'reset-icon';
@@ -163,8 +163,8 @@ export function addResetButton(camera, clone, controls) {
     function updateLockRotationButtonImage() {
         const basePath = window.location.hostname.includes("github.io") ? "/smartrpd_viewer" : "";
 
-        const lockedImageUrl = `${basePath}/lock.png`;    // Replace with your locked image path
-        const unlockedImageUrl = `${basePath}/unlock.png`;
+        const lockedImageUrl = `${basePath}/assets/lock.png`;    // Replace with your locked image path
+        const unlockedImageUrl = `${basePath}/assets/unlock.png`;
  // Replace with your unlocked image path
         const imageUrl = rotationLocked ? lockedImageUrl : unlockedImageUrl;
 

@@ -104,15 +104,15 @@ function addVisibilityAndTransparencyControls(parentObject, name, material_array
 
             if (child.name.includes('surface')) {
                 if (child.name.includes('lower')) {
-                    iconPath = `${basePath}/Icon_LowerJaw.png`;
+                    iconPath = `${basePath}/assets/Icon_LowerJaw.png`;
                 } else if (child.name.includes('upper')) {
-                    iconPath = `${basePath}/Icon_UpperJaw.png`;
+                    iconPath = `${basePath}/assets/Icon_UpperJaw.png`;
                 }
             } else {
                 if (child.name.includes('lower')) {
-                    iconPath = `${basePath}/Icon_LowerJaw_Occlusal.png`;
+                    iconPath = `${basePath}/assets/Icon_LowerJaw_Occlusal.png`;
                 } else if (child.name.includes('upper')) {
-                    iconPath = `${basePath}/Icon_UpperJaw_Occlusal.png`;
+                    iconPath = `${basePath}/assets/Icon_UpperJaw_Occlusal.png`;
                 }
             }
 
