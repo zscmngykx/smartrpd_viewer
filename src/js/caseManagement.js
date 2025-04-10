@@ -286,7 +286,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             // const targetURL = `${window.location.origin}/src/pages/ThreeDViewer.html/?id=${encryptedId}`;
             // console.log("🚀 Jumping to:", targetURL);
             // window.open(targetURL, "_blank");
-            const encryptedId = lol(caseId);
+        const encryptedId = lol(caseId);
         const isGitHubPages = window.location.hostname.includes("github.io");
         const isLocal = window.location.hostname === "localhost";
 
@@ -294,10 +294,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         const queryConnector = isLocal ? "/?" : "?";
         const basePath = isGitHubPages ? "/smartrpd_viewer" : "";
 
-        const targetURL = `${window.location.origin}${basePath}/ThreeDViewer.html${queryConnector}id=${encryptedId}`;
+        const targetURL = `${window.location.origin}${basePath}/src/pages/ThreeDViewer.html${queryConnector}id=${encryptedId}`;
         window.open(targetURL, "_blank");
-
-
         });
     }
     

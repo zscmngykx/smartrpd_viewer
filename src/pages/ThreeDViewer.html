@@ -4,86 +4,6 @@
     
     <meta charset="utf-8" />
     <title>SmartRPD Web Lite</title>
-    <link rel="stylesheet" href="css/style.css" />
-    <style>
-      /* Default styles for the loading bar */
-      .loading-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-        height: 100%;
-        position: fixed;
-        top: 0;
-        left: 0;
-        z-index: 9999; /* Ensure the loading bar stays on top */
-      }
-      .loading-bar {
-        width: 200px;
-        height: 20px;
-        background-color: #e0e0e0; /* Light grey background */
-        overflow: hidden; /* Hide anything that overflows */
-        position: relative;
-        margin: 0 auto;
-        /* Center the loading bar vertically */
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-      }
-      /* Default styles for the loading progress */
-      .loading-progress {
-        width: 100%; /* Width of the loading bar segment */
-        height: 100%;
-        background-color: #76c7c0; /* Color of the loading bar segment */
-        position: absolute;
-        animation: loading 2s linear infinite; /* Animation name, duration, timing function, and repeat */
-      }
-      /* Keyframes for the loading animation */
-      @keyframes loading {
-        0% {
-          left: -100%; /* Start off-screen to the left */
-        }
-        50% {
-          left: 100%; /* Move off-screen to the right */
-        }
-        100% {
-          left: 100%; /* Ensure it stays off-screen */
-        }
-      }
-
-      /* Styles for landscape mode prompt */
-      #rotateNotice {
-        display: none;
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background-color: rgba(0, 0, 0, 0.8);
-        color: white;
-        padding: 20px;
-        border-radius: 10px;
-        text-align: center;
-        z-index: 1000;
-      }
-            /* Make the page unscrollable */
-            html, body {
-        overflow: hidden;
-        height: 100%;
-        margin: 0; /* Ensure no default margin */
-      }
-    </style>
-     <script>
-      // 判断是否在 GitHub Pages 上运行
-      const isGitHubPages = window.location.hostname.includes("github.io");
-      const basePath = isGitHubPages ? "/smartrpd_viewer" : "";
-  
-      document.write(`
-        <link rel="stylesheet" href="${basePath}/css/style.css" />
-        <script type="module" src="${basePath}/src/index.js"></` + `script>
-        <script type="module" src="${basePath}/dist/bundle.js"></` + `script>
-      `);
-    </script>
   </head>
   <body>
     <header>
@@ -93,7 +13,6 @@
       <div id="container3D"></div>
     </main>
     <div id="loading-container"></div>
- 
    <!--<div id="rotateNotice"><h1>Please rotate your device to landscape mode and refresh the page.</h1></div>
     <script>
       function checkOrientation() {
@@ -109,7 +28,23 @@
       window.addEventListener('orientationchange', checkOrientation);
     </script>-->
     <!--<script src="./script.js"></script>-->
-    <script type="module" src="src/index.js"></script>
-    <script type="module" src="dist/bundle.js"></script>
+    <div id="annotation-chat">
+      <div id="chat-messages"></div>
+      <div id="chat-input-area">
+        <input type="text" id="chat-input" placeholder="Enter annotation...">
+        <button id="send-msg">send</button>
+      </div>
+    </div>
+    <script>
+      const isGitHubPages = window.location.hostname.includes("github.io");
+      const basePath = isGitHubPages ? "/smartrpd_viewer" : "";
+      document.write(`
+        <link rel="stylesheet" href="${basePath}/css/style.css" />
+        <script type="module" src="${basePath}/src/index.js"></` + `script>
+        <script type="module" src="${basePath}/dist/bundle.js"></` + `script>
+        <script type="module" src="${basePath}/src/js/ThreeDMobile.js"></` + `script>
+        <img id="chat-icon" src="${basePath}/assets/chat-icon.png" alt="chat" style="display: none;" />
+      `);
+    </script>
   </body>
 </html>

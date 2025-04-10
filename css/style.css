@@ -1,4 +1,3 @@
-
 @keyframes loading {
   0% {
       left: -100%;
@@ -36,3 +35,166 @@ header h1 {
   left: 0;
 }
 
+/* Default styles for the loading bar */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999; /* Ensure the loading bar stays on top */
+}
+.loading-bar {
+  width: 200px;
+  height: 20px;
+  background-color: #e0e0e0; /* Light grey background */
+  overflow: hidden; /* Hide anything that overflows */
+  position: relative;
+  margin: 0 auto;
+  /* Center the loading bar vertically */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+/* Default styles for the loading progress */
+.loading-progress {
+  width: 100%; /* Width of the loading bar segment */
+  height: 100%;
+  background-color: #76c7c0; /* Color of the loading bar segment */
+  position: absolute;
+  animation: loading 2s linear infinite; /* Animation name, duration, timing function, and repeat */
+}
+/* Keyframes for the loading animation */
+@keyframes loading {
+  0% {
+    left: -100%; /* Start off-screen to the left */
+  }
+  50% {
+    left: 100%; /* Move off-screen to the right */
+  }
+  100% {
+    left: 100%; /* Ensure it stays off-screen */
+  }
+}
+
+/* Styles for landscape mode prompt */
+#rotateNotice {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  z-index: 1000;
+}
+      /* Make the page unscrollable */
+      html, body {
+  overflow: hidden;
+  height: 100%;
+  margin: 0; /* Ensure no default margin */
+}
+
+/* 标注框css */
+#annotation-chat {
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  width: 250px;
+  height: 300px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  z-index: 999;
+  overflow: hidden;
+  font-family: sans-serif;
+}
+
+#chat-messages {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+.message-bubble {
+  background-color: #DCF8C6;
+  padding: 8px 12px;
+  margin: 6px 0;
+  border-radius: 10px;
+  max-width: 80%;
+  align-self: flex-end;
+  font-size: 14px;
+  position: relative;
+}
+
+.message-bubble::after {
+  content: attr(data-time);
+  position: absolute;
+  bottom: -16px;
+  right: 4px;
+  font-size: 10px;
+  color: #888;
+}
+
+#chat-input-area {
+  display: flex;
+  border-top: 1px solid #ddd;
+}
+
+#chat-input {
+  flex: 1;
+  border: none;
+  padding: 10px;
+  font-size: 14px;
+  outline: none;
+}
+
+#send-msg {
+  border: none;
+  background: #14181D;
+  color: white;
+  padding: 0 16px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+
+#chat-icon {
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  width: 48px;
+  height: 48px;
+  z-index: 9999;
+  cursor: pointer;
+  display: none; /* 默认隐藏，由 JS 控制在移动端显示 */
+}
+
+/* 移动端展开后的聊天框样式 */
+#annotation-chat.active {
+  display: flex !important;
+  flex-direction: column;
+  position: fixed;
+  bottom: 650px;
+  /* 水平居中核心逻辑 */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 800px; /* 设置固定宽度 */
+  height: 40%;
+  max-height: 50%;
+
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  z-index: 9999;
+}
