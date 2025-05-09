@@ -187,16 +187,15 @@ export function addResetButton(camera, clone, controls) {
         lockRotationButton.appendChild(span);
     }
 
-    // Create the legend container
     const legendContainer = document.createElement('div');
     legendContainer.style.position = 'fixed';
     legendContainer.style.bottom = '100px';
-    legendContainer.style.left = '10px';
+    legendContainer.style.left = '5px';
     legendContainer.style.zIndex = '1000';
-    legendContainer.style.backgroundColor = 'white';
-    legendContainer.style.border = '1px solid transparent';
+    legendContainer.style.backgroundColor = 'transparent';
+    legendContainer.style.border = '0px solid transparent';
     legendContainer.style.padding = '10px';
-    legendContainer.style.borderRadius = '5px';
+    legendContainer.style.borderRadius = '0px';
     legendContainer.style.fontFamily = 'Arial, sans-serif';
     legendContainer.style.fontSize = '14px';
     legendContainer.style.minWidth = '190px';
