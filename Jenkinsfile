@@ -23,11 +23,15 @@ pipeline {
         stage('Build ThreeDViewer.bundle.js') {
             steps {
                 sh '''
-                echo "🛠️ 构建 ThreeDViewer.bundle.js..."
-                npx webpack --mode production
+                echo "🛠️ 执行 npm run build..."
+                npm run build
+
+                echo "📂 查看 dist/ 目录打包结果："
+                ls -lh dist/
                 '''
             }
         }
+
 
         stage('Clean Old Deployment') {
             steps {
