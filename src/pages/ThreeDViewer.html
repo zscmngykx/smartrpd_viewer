@@ -49,7 +49,7 @@
       const basePath = isGitHubPages ? "/smartrpd_viewer" : "";
 
       const bundlePath = isGitHubPages
-      ? `${basePath}/bundle.js`
+      ? `${basePath}/dist/bundle.js`
       : isAWS
       ? "/dist/bundle.js"
       : "/dist/bundle.js"; // ✅ 本地修复：不要使用相对路径 ./dist
