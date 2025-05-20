@@ -1,0 +1,68 @@
+name: Frontend CI/CD to AWS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 拉取代码
+        uses: actions/checkout@v3
+
+      - name: 📦 安装依赖
+        run: |
+          echo "📦 安装依赖..."
+          npm install
+
+      - name: 🔓 修复 webpack 执行权限
+        run: |
+          echo "🔓 修复 webpack 执行权限..."
+          chmod +x node_modules/.bin/webpack || true
+
+      - name: 🛠️ 构建 ThreeDViewer.bundle.js
+        run: |
+          echo "🛠️ 执行 npm run build..."
+          npm run build
+
+          echo "📂 查看 dist/ 目录打包结果："
+          ls -lh dist/
+
+      - name: 🧹 清理远程部署目录
+        run: |
+          echo "🧹 清理旧部署目录..."
+          echo "${{ secrets.EC2_SSH_KEY }}" > private_key.pem
+          chmod 600 private_key.pem
+          ssh -o StrictHostKeyChecking=no -i private_key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} 'sudo rm -rf /var/www/html/*'
+
+      - name: 📤 拷贝静态文件到 EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: |
+            index.html
+            css
+            assets
+            dist/bundle.js
+            src/pages/*.html
+            src/js/*.js
+            src/*.js
+          target: /var/www/html/
+          strip_components: 0
+
+      - name: ✅ 输出访问链接
+        run: |
+          echo '✅ 部署完成，请访问：'
+          echo '🔗 http://${{ secrets.EC2_HOST }}/index.html'
+          echo '🔗 http://${{ secrets.EC2_HOST }}/src/pages/case_list.html'
+          echo '🔗 http://${{ secrets.EC2_HOST }}/src/pages/ThreeDViewer.html'
+        if: success()
+
+      - name: ❌ 构建失败提示
+        run: echo '❌ 构建失败，请检查日志'
+        if: failure()
