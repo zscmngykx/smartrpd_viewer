@@ -48,7 +48,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           source: dist/bundle.js
           target: /var/www/html/
-          strip_components: 0
+          strip_components: 1
 
       - name: ✅ 输出访问链接
         run: |
