@@ -35,10 +35,14 @@ jobs:
 
       - name: 🧹 清理远程部署目录
         run: |
-          echo "🧹 清理旧部署目录..."
+          echo "🧹 清理旧部署目录并赋权..."
           echo "${{ secrets.EC2_SSH_KEY }}" > private_key.pem
           chmod 600 private_key.pem
-          ssh -o StrictHostKeyChecking=no -i private_key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} 'sudo rm -rf /var/www/html/*'
+          ssh -o StrictHostKeyChecking=no -i private_key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
+            sudo rm -rf /var/www/html/* &&
+            sudo mkdir -p /var/www/html &&
+            sudo chown -R $USER:$USER /var/www/html
+          '
 
       - name: 📤 上传 dist/bundle.js 到 EC2（仅测试）
         uses: appleboy/scp-action@master
