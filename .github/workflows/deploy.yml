@@ -44,20 +44,15 @@ jobs:
             sudo chown -R $USER:$USER /var/www/html
           '
 
-      - name: 📤 上传基本静态资源到 EC2
+      - name: 📤 上传 dist/bundle.js 到 EC2（仅测试）
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: |
-            index.html
-            css/**
-            assets/**
-            dist/bundle.js
+          source: dist/bundle.js
           target: /var/www/html/
-          strip_components: 0
-
+          strip_components: 1
 
       - name: ✅ 输出访问链接
         run: |
