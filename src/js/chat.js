@@ -11,36 +11,31 @@ const imageInput = document.getElementById('imageInput');
 let messages = [];
 let pendingImageBase64 = null;
 
-// 从 URL 获取加密 caseId
+// 解密 caseId
 const encryptedCaseId = new URLSearchParams(window.location.search).get('id');
-console.log('🔐 Encrypted caseId from URL:', encryptedCaseId);
-
 if (!encryptedCaseId) {
     alert('Missing case ID');
     throw new Error('Missing case ID');
 }
 
 const caseId = lol(encryptedCaseId);
-console.log('🔓 Decrypted caseId:', caseId);
-
 if (!caseId) {
     alert('Invalid case ID');
     throw new Error('Invalid case ID');
 }
 
-// 🔍 通过 base64 前缀推测图片 MIME 类型
+// 推测 MIME 类型
 function detectImageMime(base64) {
     const signature = base64.substring(0, 5);
     if (signature.startsWith('/9j/')) return 'image/jpeg';
     if (signature.startsWith('iVBOR')) return 'image/png';
     if (signature.startsWith('R0lG')) return 'image/gif';
     if (signature.startsWith('UklGR')) return 'image/webp';
-    return 'image/jpeg'; // 默认回退
+    return 'image/jpeg';
 }
 
-// 获取后端笔记
+// 获取历史记录
 async function fetchNotes() {
-    console.log(`📡 Fetching notes for caseId: ${caseId}`);
     try {
         const response = await fetch(`https://live.api.smartrpdai.com/api/smartrpd/notes/get/${caseId}`, {
             method: 'POST',
@@ -50,13 +45,16 @@ async function fetchNotes() {
 
         if (response.ok) {
             const notes = await response.json();
-            notes.reverse(); 
+            notes.reverse();
             messages = notes.map(note => {
-                const isImage = !!note.image_base64;
-                const mimeType = isImage ? detectImageMime(note.image_base64) : null;
-                const content = isImage
-                    ? `<img src="data:${mimeType};base64,${note.image_base64}" alt="Note Image" class="uploaded-image" />`
-                    : note.content;
+                let content = '';
+                if (note.image_base64) {
+                    const mimeType = detectImageMime(note.image_base64);
+                    content += `<img src="data:${mimeType};base64,${note.image_base64}" alt="Note Image" class="uploaded-image" />`;
+                }
+                if (note.content) {
+                    content += `<div style="margin-top:6px;">${note.content}</div>`;
+                }
                 return {
                     content,
                     author: note.author_username,
@@ -72,7 +70,7 @@ async function fetchNotes() {
     }
 }
 
-// 显示消息
+// 渲染消息
 function displayMessages() {
     chatBox.innerHTML = '';
     messages.forEach(msg => {
@@ -97,11 +95,10 @@ function displayMessages() {
         chatBox.appendChild(messageElement);
     });
 
-    // ✅ 等图片加载完再 scroll 到底
+    // 滚动到底
     const images = chatBox.querySelectorAll('img');
     if (images.length > 0) {
-        const lastImg = images[images.length - 1];
-        lastImg.onload = () => {
+        images[images.length - 1].onload = () => {
             chatBox.scrollTop = chatBox.scrollHeight;
         };
     } else {
@@ -109,10 +106,8 @@ function displayMessages() {
     }
 }
 
-
-// 创建笔记（提交给后端）
+// 提交新消息
 async function createNote(content, imageBase64 = null) {
-    console.log('📝 Creating note:', content || '[Image only]');
     try {
         const response = await fetch('https://live.api.smartrpdai.com/api/smartrpd/notes/create', {
             method: 'POST',
@@ -125,10 +120,7 @@ async function createNote(content, imageBase64 = null) {
             })
         });
 
-        if (response.ok) {
-            console.log('✅ Note created');
-            fetchNotes();
-        } else {
+        if (!response.ok) {
             console.error('❌ Failed to create note:', response.status);
         }
     } catch (err) {
@@ -136,54 +128,88 @@ async function createNote(content, imageBase64 = null) {
     }
 }
 
-// 点击发送
+// 点击发送按钮
 async function handleSendMessage() {
     const message = textInput.value.trim();
+
     if (message || pendingImageBase64) {
+        // 前端构建图文合并消息
+        const previewHtml = `
+            ${pendingImageBase64 ? `<img src="data:image/jpeg;base64,${pendingImageBase64}" alt="Image" class="uploaded-image" />` : ''}
+            ${message ? `<div style="margin-top:6px;">${message}</div>` : ''}
+        `;
+        messages.push({
+            content: previewHtml,
+            author: 'You',
+            timestamp: new Date().toLocaleString(),
+        });
+        displayMessages();
+
+        // 发送到后端
         await createNote(message, pendingImageBase64);
+
+        // 清除状态
         textInput.value = '';
         imageInput.value = '';
         pendingImageBase64 = null;
         messages = messages.filter(m => m.author !== 'Click send to upload image');
+
+        // 获取后端更新
         fetchNotes();
     }
 }
 
-// 图片上传 → 只预览
+// 渲染预览图（上传/粘贴共用）
+function previewImage(base64, mime = 'image/jpeg') {
+    pendingImageBase64 = base64;
+    messages = messages.filter(m => m.author !== 'Click send to upload image');
+
+    const previewHtml = `
+        <img src="data:${mime};base64,${base64}" alt="Preview" class="uploaded-image" />
+        <div style="text-align:right; margin-top:4px;">
+            <button class="cancel-preview" onclick="clearImage()">cancel</button>
+        </div>
+    `;
+    messages.push({
+        content: previewHtml,
+        author: 'Click send to upload image',
+        timestamp: new Date().toLocaleString(),
+    });
+    displayMessages();
+}
+
+// 上传图片
 function handleImageUpload(event) {
     const file = event.target.files[0];
     if (file) {
         const reader = new FileReader();
         reader.onload = function (e) {
             const base64 = e.target.result.split(',')[1];
-            const mime = file.type || 'image/jpeg';
-            pendingImageBase64 = base64;
-            console.log('🖼️ 图片预览加载成功');
-
-            // 移除已有预览图
-            messages = messages.filter(m => m.author !== 'Click send to upload image');
-
-            const previewHtml = `
-                <img src="data:${mime};base64,${base64}" alt="Preview" class="uploaded-image" />
-                <div style="text-align:right; margin-top:4px;">
-                    <button class="cancel-preview" onclick="clearImage()">cancel</button>
-                </div>
-            `;
-
-            messages.push({
-                content: previewHtml,
-                author: 'Click send to upload image',
-                timestamp: new Date().toLocaleString(),
-            });
-
-            displayMessages();
-            imageInput.value = ''; // 允许重复选择
+            previewImage(base64, file.type || 'image/jpeg');
         };
         reader.readAsDataURL(file);
     }
 }
 
-// 取消图片预览
+// Ctrl+V 粘贴图片
+textInput.addEventListener('paste', function (e) {
+    const items = e.clipboardData && e.clipboardData.items;
+    if (!items) return;
+
+    for (const item of items) {
+        if (item.type.indexOf("image") !== -1) {
+            const file = item.getAsFile();
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                const base64 = event.target.result.split(',')[1];
+                previewImage(base64, file.type || 'image/jpeg');
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+});
+
+// 取消图片预览（不清除文本）
 window.clearImage = function () {
     pendingImageBase64 = null;
     messages = messages.filter(m => m.author !== 'Click send to upload image');
@@ -191,23 +217,21 @@ window.clearImage = function () {
     imageInput.value = '';
 };
 
-// 事件绑定
-sendBtn.addEventListener('click', handleSendMessage);
-uploadBtn.addEventListener('click', () => imageInput.click());
-imageInput.addEventListener('change', handleImageUpload);
-fetchNotes();
-
-// 图片点击放大
+// 放大图片
 const imageModal = document.getElementById('imageModal');
 const modalImage = document.getElementById('modalImage');
-
 chatBox.addEventListener('click', function (e) {
     if (e.target.tagName === 'IMG') {
         modalImage.src = e.target.src;
         imageModal.style.display = 'flex';
     }
 });
-
 imageModal.addEventListener('click', function () {
     imageModal.style.display = 'none';
 });
+
+// 初始化
+sendBtn.addEventListener('click', handleSendMessage);
+uploadBtn.addEventListener('click', () => imageInput.click());
+imageInput.addEventListener('change', handleImageUpload);
+fetchNotes();
