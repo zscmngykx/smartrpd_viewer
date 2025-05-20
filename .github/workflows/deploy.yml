@@ -49,21 +49,26 @@ jobs:
             sudo chown -R $USER:$USER /var/www/html
           '
 
-      - name: 📤 上传静态资源到 EC2（保持原始结构）
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          source: |
-            source: |
-            index.html
-            css
-            assets
-            dist/bundle.js
-            src
-          target: /var/www/html/
-          strip_components: 0
+      - name: 📤 使用原生 scp 上传所有静态资源（彻底稳定）
+        run: |
+          echo "${{ secrets.EC2_SSH_KEY }}" > private_key.pem
+          chmod 600 private_key.pem
+
+          echo "📦 上传 index.html"
+          scp -i private_key.pem -o StrictHostKeyChecking=no index.html ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/var/www/html/
+
+          echo "📦 上传 css/"
+          scp -i private_key.pem -o StrictHostKeyChecking=no -r css ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/var/www/html/
+
+          echo "📦 上传 assets/"
+          scp -i private_key.pem -o StrictHostKeyChecking=no -r assets ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/var/www/html/
+
+          echo "📦 上传 dist/bundle.js"
+          scp -i private_key.pem -o StrictHostKeyChecking=no dist/bundle.js ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/var/www/html/
+
+          echo "📦 上传 src/"
+          scp -i private_key.pem -o StrictHostKeyChecking=no -r src ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/var/www/html/
+
 
       - name: 📁 显示 EC2 上部署结果
         run: |
