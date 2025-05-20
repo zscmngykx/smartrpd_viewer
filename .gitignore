@@ -1,1 +1,5 @@
-node_modules
+# Node.js dependencies
+node_modules/
+
+# Webpack build output
+dist/
