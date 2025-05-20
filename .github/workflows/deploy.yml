@@ -41,7 +41,7 @@ jobs:
             sudo chown -R $USER:$USER /var/www/html
           '
 
-      - name: 📤 上传所有静态文件（自动保留 src 结构）
+      - name: 📤 上传所有静态文件（保留 src 路径结构）
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -49,12 +49,13 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           source: |
             index.html
-            css
-            assets
+            css/**
+            assets/**
             dist/bundle.js
-            src
+            src/**
           target: /var/www/html/
           strip_components: 0
+
 
       - name: ✅ 输出访问链接
         run: |
