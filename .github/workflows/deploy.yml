@@ -57,14 +57,11 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           source: |
             index.html
-            css
-            assets
+            css/**
+            assets/**
             dist/bundle.js
-            src/pages/*.html
-            src/js/*.js
-            src/*.js
           target: /var/www/html/
-          strip_components: 0
+          strip_components: 1
 
       - name: 📁 显示 EC2 上部署结果
         run: |
