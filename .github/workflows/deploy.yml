@@ -64,10 +64,11 @@ jobs:
           scp -i private_key.pem -o StrictHostKeyChecking=no -r assets ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/var/www/html/
 
           echo "📦 上传 dist/bundle.js"
-          scp -i private_key.pem -o StrictHostKeyChecking=no dist/bundle.js ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/var/www/html/
+          scp -i private_key.pem -o StrictHostKeyChecking=no dist/bundle.js ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/var/www/html/dist/
 
           echo "📦 上传 src/"
           scp -i private_key.pem -o StrictHostKeyChecking=no -r src ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/var/www/html/
+
 
 
       - name: 📁 显示 EC2 上部署结果
@@ -84,15 +85,15 @@ jobs:
           echo '🔗 http://${{ secrets.EC2_HOST }}/src/pages/case_list.html'
           echo '🔗 http://${{ secrets.EC2_HOST }}/src/pages/ThreeDViewer.html'
         if: success()
-        
-      - name: 📁 查看 EC2 上的 dist 目录内容
-        run: |
-          echo "${{ secrets.EC2_SSH_KEY }}" > private_key.pem
-          chmod 600 private_key.pem
-          ssh -o StrictHostKeyChecking=no -i private_key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
-            echo "✅ dist 目录内容："
-            ls -lh /var/www/html/dist
-          '
+
+    #   - name: 📁 查看 EC2 上的 dist 目录内容
+    #     run: |
+    #       echo "${{ secrets.EC2_SSH_KEY }}" > private_key.pem
+    #       chmod 600 private_key.pem
+    #       ssh -o StrictHostKeyChecking=no -i private_key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
+    #         echo "✅ dist 目录内容："
+    #         ls -lh /var/www/html/dist
+    #       '
       
       - name: ❌ 构建失败提示
         run: echo '❌ 构建失败，请检查日志'
