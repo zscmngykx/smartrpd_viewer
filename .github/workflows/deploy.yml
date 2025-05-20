@@ -6,45 +6,72 @@ on:
       - main
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📥 拉取代码
+      - name: Checkout source code
         uses: actions/checkout@v3
 
-      - name: 📦 安装依赖
+      - name: Install dependencies
         run: |
-          echo "📦 安装依赖..."
+          echo "Installing dependencies..."
           npm install
-      - name: 🧪 运行单元测试
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
         run: |
-          echo "🧪 运行前端测试..."
+          echo "Installing dependencies..."
+          npm install
+
+      - name: Run unit tests
+        run: |
+          echo "Running frontend tests..."
           npm run test
 
-      - name: 🔓 修复 webpack 执行权限
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
         run: |
-          echo "🔓 修复 webpack 执行权限..."
+          echo "Installing dependencies..."
+          npm install
+
+      - name: Fix webpack permissions
+        run: |
+          echo "Fixing webpack executable permissions..."
           chmod +x node_modules/.bin/webpack || true
 
-      - name: 🛠️ 构建 ThreeDViewer.bundle.js
+      - name: Build ThreeDViewer.bundle.js
         run: |
-          echo "🛠️ 执行 npm run build..."
+          echo "Running build..."
           npm run build
-          echo "📂 构建输出内容："
+          echo "Output in dist/:"
           ls -lh dist/
-          echo "📂 src/pages 内容："
+          echo "Contents of src/pages:"
           ls -lh src/pages || true
-          echo "📂 css 内容："
+          echo "Contents of css:"
           ls -lh css || true
-          echo "📂 assets 内容："
+          echo "Contents of assets:"
           ls -lh assets || true
-          echo "📂 src 根目录文件："
+          echo "Root-level JS in src:"
           ls -lh src/*.js || true
 
-      - name: 🧹 清理远程部署目录
+      - name: Clean remote deployment directory
         run: |
-          echo "🧹 清理旧部署目录并赋权..."
+          echo "Cleaning old deployment and setting permissions..."
           echo "${{ secrets.EC2_SSH_KEY }}" > private_key.pem
           chmod 600 private_key.pem
           ssh -o StrictHostKeyChecking=no -i private_key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
@@ -53,57 +80,44 @@ jobs:
             sudo chown -R $USER:$USER /var/www/html
           '
 
-      - name: 📤 使用原生 scp 上传所有静态资源（彻底稳定）
+      - name: Upload static assets to EC2 (using scp)
         run: |
           echo "${{ secrets.EC2_SSH_KEY }}" > private_key.pem
           chmod 600 private_key.pem
 
-          echo "📦 上传 index.html"
+          echo "Uploading index.html"
           scp -i private_key.pem -o StrictHostKeyChecking=no index.html ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/var/www/html/
 
-          echo "📦 上传 css/"
+          echo "Uploading css/"
           scp -i private_key.pem -o StrictHostKeyChecking=no -r css ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/var/www/html/
 
-          echo "📦 上传 assets/"
+          echo "Uploading assets/"
           scp -i private_key.pem -o StrictHostKeyChecking=no -r assets ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/var/www/html/
 
-          echo "📦 上传 dist/bundle.js"
-          # ✅ 先在 EC2 上创建 /dist 目录
+          echo "Creating dist/ on EC2"
           ssh -o StrictHostKeyChecking=no -i private_key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} 'mkdir -p /var/www/html/dist'
 
-            # 📦 上传 bundle.js 到 /dist/
+          echo "Uploading bundle.js"
           scp -i private_key.pem -o StrictHostKeyChecking=no dist/bundle.js ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/var/www/html/dist/
 
-
-          echo "📦 上传 src/"
+          echo "Uploading src/"
           scp -i private_key.pem -o StrictHostKeyChecking=no -r src ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/var/www/html/
 
-
-
-      - name: 📁 显示 EC2 上部署结果
+      - name: Show deployment result on EC2
         run: |
           echo "${{ secrets.EC2_SSH_KEY }}" > private_key.pem
           chmod 600 private_key.pem
-          echo "📁 查看远程 /var/www/html/ 结构："
+          echo "Directory structure at /var/www/html/:"
           ssh -o StrictHostKeyChecking=no -i private_key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} 'ls -R /var/www/html/'
 
-      - name: ✅ 输出访问链接
+      - name: Show access links
         run: |
-          echo '✅ 部署完成，请访问：'
+          echo 'Deployment complete. Access links:'
           echo '🔗 http://${{ secrets.EC2_HOST }}/index.html'
           echo '🔗 http://${{ secrets.EC2_HOST }}/src/pages/case_list.html'
           echo '🔗 http://${{ secrets.EC2_HOST }}/src/pages/ThreeDViewer.html'
         if: success()
 
-    #   - name: 📁 查看 EC2 上的 dist 目录内容
-    #     run: |
-    #       echo "${{ secrets.EC2_SSH_KEY }}" > private_key.pem
-    #       chmod 600 private_key.pem
-    #       ssh -o StrictHostKeyChecking=no -i private_key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
-    #         echo "✅ dist 目录内容："
-    #         ls -lh /var/www/html/dist
-    #       '
-      
-      - name: ❌ 构建失败提示
-        run: echo '❌ 构建失败，请检查日志'
+      - name: Deployment failure notice
+        run: echo 'Build failed. Please check logs.'
         if: failure()
