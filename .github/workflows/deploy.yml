@@ -112,18 +112,10 @@ jobs:
 
       - name: Show access links
         run: |
-          echo ' Deployment complete. Access links:'
-          echo ' http://${{ secrets.EC2_HOST }}/index.html'
-          echo ' http://${{ secrets.EC2_HOST }}/src/pages/case_list.html'
-          echo ' http://${{ secrets.EC2_HOST }}/src/pages/ThreeDViewer.html'
-        if: success()
-
-      # ✅ GitHub Pages 自动部署
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+          echo 'Deployment complete. Access links:'
+          echo '🔗 http://${{ secrets.EC2_HOST }}/index.html'
+          echo '🔗 http://${{ secrets.EC2_HOST }}/src/pages/case_list.html'
+          echo '🔗 http://${{ secrets.EC2_HOST }}/src/pages/ThreeDViewer.html'
         if: success()
 
       - name: Deployment failure notice
