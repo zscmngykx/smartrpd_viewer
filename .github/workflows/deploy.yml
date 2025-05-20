@@ -64,7 +64,12 @@ jobs:
           scp -i private_key.pem -o StrictHostKeyChecking=no -r assets ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/var/www/html/
 
           echo "📦 上传 dist/bundle.js"
+          # ✅ 先在 EC2 上创建 /dist 目录
+          ssh -o StrictHostKeyChecking=no -i private_key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} 'mkdir -p /var/www/html/dist'
+
+            # 📦 上传 bundle.js 到 /dist/
           scp -i private_key.pem -o StrictHostKeyChecking=no dist/bundle.js ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/var/www/html/dist/
+
 
           echo "📦 上传 src/"
           scp -i private_key.pem -o StrictHostKeyChecking=no -r src ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/var/www/html/
