@@ -27,11 +27,8 @@ jobs:
         run: |
           echo "🛠️ 执行 npm run build..."
           npm run build
-
-          echo "📂 查看构建输出："
+          echo "📂 查看 dist/ 目录打包结果："
           ls -lh dist/
-          echo "📂 查看 src/pages："
-          ls -lh src/pages || true
 
       - name: 🧹 清理远程部署目录
         run: |
@@ -44,7 +41,7 @@ jobs:
             sudo chown -R $USER:$USER /var/www/html
           '
 
-      - name: 📤 上传所有静态文件到 EC2
+      - name: 📤 上传所有静态文件（保留路径结构）到 EC2
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -55,8 +52,8 @@ jobs:
             css
             assets
             dist/bundle.js
-            src/pages/*.html
-            src/js/*.js
+            src/pages
+            src/js
             src/*.js
           target: /var/www/html/
           strip_components: 0
