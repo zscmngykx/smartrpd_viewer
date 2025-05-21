@@ -1,0 +1,36 @@
+name: Docker Auto Deploy (Triggered by Frontend CI)
+
+on:
+  workflow_run:
+    workflows: ["Frontend CI/CD to AWS"]  # Must match the name in your main workflow
+    types:
+      - completed
+
+jobs:
+  dockerize:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: SSH into EC2 and build & run Docker container
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}            # EC2 public IP
+          username: ${{ secrets.EC2_USER }}        # Usually 'ubuntu'
+          key: ${{ secrets.EC2_SSH_KEY }}          # PEM file content
+
+          script: |
+            echo "Stopping old container (if exists)..."
+            docker rm -f rpd-frontend || true
+
+            echo "Removing old image (if exists)..."
+            docker rmi rpd-frontend || true
+
+            echo "Changing to project directory..."
+            cd /home/ubuntu/smartrpd_viewer   # Replace with actual project path
+
+            echo "Building Docker image..."
+            docker build -t rpd-frontend .
+
+            echo "Running new container on port 8090..."
+            docker run -d -p 8090:80 --name rpd-frontend rpd-frontend
