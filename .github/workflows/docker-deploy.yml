@@ -1,4 +1,4 @@
-name: Docker Auto Deploy (Triggered by Frontend CI)
+name: Docker Auto Deploy (Triggered by CI)
 
 on:
   workflow_run:
