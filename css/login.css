@@ -72,8 +72,7 @@ input::placeholder {
 button {
     width: 220px;
     padding: 12px;
-    background-color: #ba0a26;
-    /* background-color: #ba0a26; */
+    background-color: black;
     color: white;
     border: none;
     cursor: pointer;
