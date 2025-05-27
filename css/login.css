@@ -73,6 +73,7 @@ button {
     width: 220px;
     padding: 12px;
     background-color: #ba0a26;
+    /* background-color: #ba0a26; */
     color: white;
     border: none;
     cursor: pointer;
