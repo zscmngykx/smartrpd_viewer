@@ -3,10 +3,10 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main   # 监听 main 分支的提交
+      - main
 
 jobs:
-  deploy-pages:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -22,10 +22,35 @@ jobs:
         run: npm install
 
       - name: Build project
-        run: npm run build    # 替换成你的打包命令
+        run: |
+          echo "Running build..."
+          npm run build
+          echo "Output in dist/:"
+          ls -lh dist/ || true
+          echo "Contents of css/:"
+          ls -lh css/ || true
+          echo "Contents of assets/:"
+          ls -lh assets/ || true
+          echo "Root-level JS files:"
+          ls -lh *.js || true
+          echo "Root-level HTML files:"
+          ls -lh *.html || true
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist   # 替换成打包产物目录，如 build 或者 dist
+          publish_dir: .      # 这里使用根目录，部署根目录下的 index.html, css/, bundle.js 等等
+          exclude_assets: |
+            .github/**
+            .gitignore
+            node_modules/**
+            src/**
+            package*.json
+            README.md
+            .dockerignore
+            Dockerfile
+            Jenkinsfile
+            webpack.config.js
+            babel.config.js
+            script.js
