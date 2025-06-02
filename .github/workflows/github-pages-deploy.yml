@@ -16,7 +16,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'  # 你的 Node.js 版本
+          node-version: '20'  # 你的 Node.js 版本
 
       - name: Install dependencies
         run: npm install
@@ -31,26 +31,21 @@ jobs:
           ls -lh css/ || true
           echo "Contents of assets/:"
           ls -lh assets/ || true
-          echo "Root-level JS files:"
+          echo "Root-level JS:"
           ls -lh *.js || true
-          echo "Root-level HTML files:"
+          echo "Root-level HTML:"
           ls -lh *.html || true
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: .      # 这里使用根目录，部署根目录下的 index.html, css/, bundle.js 等等
+          publish_dir: .
+          force_orphan: true
           exclude_assets: |
             .github/**
             .gitignore
             node_modules/**
-            src/**
-            package*.json
-            README.md
-            .dockerignore
-            Dockerfile
             Jenkinsfile
-            webpack.config.js
-            babel.config.js
-            script.js
+            Dockerfile
+            README.md
