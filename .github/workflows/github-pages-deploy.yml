@@ -1,0 +1,31 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main   # 监听 main 分支的提交
+
+jobs:
+  deploy-pages:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'  # 你的 Node.js 版本
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build project
+        run: npm run build    # 替换成你的打包命令
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist   # 替换成打包产物目录，如 build 或者 dist
