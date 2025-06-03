@@ -280,6 +280,13 @@ container3D.appendChild(thumbWrapper);
 			  edit2D.textContent = 'Edit 2D';
 			  edit2D.onclick = () => sendEmail("Please do some modifications on 2D Design. See Notebox.");
 			  btnContainer2D.appendChild(edit2D);
+        
+        // 🟢 新增：Annotate 按钮
+        const annotateBtn = document.createElement('button');
+        annotateBtn.className = 'smart-btn annotate';
+        annotateBtn.textContent = 'Annotate';
+        // ⚠️ 注意：这里不写 onclick，逻辑在别的文件里绑定
+        btnContainer2D.appendChild(annotateBtn);
 
 			  twodGroup.appendChild(btnContainer2D);
 			  overlay.appendChild(twodGroup);
