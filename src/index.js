@@ -289,6 +289,14 @@ container3D.appendChild(thumbWrapper);
         // 这里不写 onclick，逻辑在别的文件里绑定
         btnContainer2D.appendChild(annotateBtn);
 
+        const historyBtn = document.createElement('button');
+        historyBtn.className = 'smart-btn history';
+        historyBtn.textContent = 'History';
+        historyBtn.addEventListener('click', (e) => e.stopPropagation()); // 防止冒泡
+        // 逻辑在别的文件里绑定
+        btnContainer2D.appendChild(historyBtn);
+
+
 
 			  twodGroup.appendChild(btnContainer2D);
 			  overlay.appendChild(twodGroup);
@@ -729,6 +737,10 @@ style.textContent = `
 
   .smart-btn.annotate {
       background-color: #6f42c1; /* 例如紫色，你可改成你想要的颜色 */
+  }
+  
+  .smart-btn.history {
+      background-color: #17a2b8; /* 蓝绿色, 你可以自由换颜色 */
   }
 
   .smart-btn.other-stl {
