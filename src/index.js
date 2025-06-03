@@ -285,8 +285,10 @@ container3D.appendChild(thumbWrapper);
         const annotateBtn = document.createElement('button');
         annotateBtn.className = 'smart-btn annotate';
         annotateBtn.textContent = 'Annotate';
-        // ⚠️ 注意：这里不写 onclick，逻辑在别的文件里绑定
+        annotateBtn.addEventListener('click', (e) => e.stopPropagation()); // 防止冒泡
+        // 这里不写 onclick，逻辑在别的文件里绑定
         btnContainer2D.appendChild(annotateBtn);
+
 
 			  twodGroup.appendChild(btnContainer2D);
 			  overlay.appendChild(twodGroup);
@@ -723,6 +725,10 @@ style.textContent = `
 
   .smart-btn.edit {
       background-color: #fd7e14;
+  }
+
+  .smart-btn.annotate {
+      background-color: #6f42c1; /* 例如紫色，你可改成你想要的颜色 */
   }
 
   .smart-btn.other-stl {
