@@ -15,6 +15,8 @@ import { ApiClient } from './ApiClient.js';
 
 import { addResetButton } from './resetButton.js';
 import {lol} from './crypt.js';
+import './js/sidebar.js'
+import '../css/sidebar.css'
 import { addVisibilityAndTransparencyControls, removeVisibilityAndTransparencyControls } from './newControls.js';
 
 //initialise everything
@@ -285,9 +287,16 @@ container3D.appendChild(thumbWrapper);
         const annotateBtn = document.createElement('button');
         annotateBtn.className = 'smart-btn annotate';
         annotateBtn.textContent = 'Annotate';
-        annotateBtn.addEventListener('click', (e) => e.stopPropagation()); // 防止冒泡
-        // 这里不写 onclick，逻辑在别的文件里绑定
+        // 这里直接写点击逻辑，切换 sidebar 显示
+        annotateBtn.addEventListener('click', (e) => {
+          e.stopPropagation(); // 防止冒泡
+          const sidebar = document.getElementById('sidebarContainer');
+          if (sidebar) {
+            sidebar.classList.toggle('hidden'); // 👈 切换显示/隐藏
+          }
+        });
         btnContainer2D.appendChild(annotateBtn);
+
 
         const historyBtn = document.createElement('button');
         historyBtn.className = 'smart-btn history';
