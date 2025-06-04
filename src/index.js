@@ -16,7 +16,6 @@ import { ApiClient } from './ApiClient.js';
 import { addResetButton } from './resetButton.js';
 import {lol} from './crypt.js';
 import './js/sidebar.js'
-import '../css/sidebar.css'
 import { addVisibilityAndTransparencyControls, removeVisibilityAndTransparencyControls } from './newControls.js';
 
 //initialise everything

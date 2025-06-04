@@ -1,6 +1,7 @@
 // 引入加密解密函数
 import { lol } from '../crypt.js';
 
+
 // 获取 DOM 元素
 const chatBox = document.getElementById('chat-box');
 const textInput = document.getElementById('textInput');
@@ -133,7 +134,9 @@ async function handleSendMessage() {
     const message = textInput.value.trim();
 
     if (message || pendingImageBase64) {
-        // 前端构建图文合并消息
+        // 立即移除预览
+        messages = messages.filter(m => m.author !== 'Click send to upload image');
+
         const previewHtml = `
             ${pendingImageBase64 ? `<img src="data:image/jpeg;base64,${pendingImageBase64}" alt="Image" class="uploaded-image" />` : ''}
             ${message ? `<div style="margin-top:6px;">${message}</div>` : ''}
@@ -145,19 +148,16 @@ async function handleSendMessage() {
         });
         displayMessages();
 
-        // 发送到后端
         await createNote(message, pendingImageBase64);
 
-        // 清除状态
         textInput.value = '';
         imageInput.value = '';
         pendingImageBase64 = null;
-        messages = messages.filter(m => m.author !== 'Click send to upload image');
 
-        // 获取后端更新
         fetchNotes();
     }
 }
+
 
 // 渲染预览图（上传/粘贴共用）
 function previewImage(base64, mime = 'image/jpeg') {
