@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=1024">
     <title>Case List</title>
     <link rel="stylesheet" href="../../css/case_list.css">
+    <link rel="stylesheet" href="../../css/createCase.css">
 </head>
 <body>
 
@@ -113,8 +114,58 @@
             
         </div>
     </div>
+    
+    <div id="caseModal" class="modal hidden">
+        <div class="modal-content">
+            <!-- 关闭按钮 -->
+            <span id="closeCaseModal" class="close-btn">&times;</span>
 
+            <!-- 标题 -->
+            <h2 class="modal-title">Create a New Case</h2>
+
+            <!-- 表单 -->
+            <form id="newCaseForm" class="modal-form">
+            <!-- Case Name -->
+            <label for="caseName" class="input-label">Case Name <span style="color: red;">*</span></label>
+            <input type="text" id="caseName" class="modal-input" placeholder="New Case Name" required />
+
+            <!-- Request Date -->
+            <label for="requestDate" class="input-label">Request Date</label>
+            <div class="input-with-icon">
+                <input type="date" id="requestDate" class="modal-input" />
+                <span class="calendar-icon">📅</span>
+            </div>
+
+            <!-- Uploaded Jaw Models -->
+            <label class="input-label">Uploaded Jaw Models</label>
+            <div id="uploadedJawModels" class="uploaded-models">
+                <div class="upload-placeholder" id="addJawModelBtn">
+                <span class="plus-icon">＋</span>
+                </div>
+            </div>
+            <input type="file" id="jawUploadInput" accept=".stl" style="display: none;" />
+
+            <!-- Upload buttons -->
+            <div class="upload-buttons">
+                <button type="button" class="upload-btn upload-ref">⬆ UPLOAD REFERENCE IMAGES</button>
+                <button type="button" class="upload-btn upload-jaw">⬆ UPLOAD JAW MODELS</button>
+            </div>
+
+            <!-- Footer buttons -->
+            <div class="modal-footer">
+                <button type="button" class="cancel-btn">CANCEL</button>
+                <button type="submit" class="invite-btn">CREATE AND INVITE USERS</button>
+                <button type="submit" class="start-btn">START</button>
+            </div>
+            </form>
+        </div>
+    </div>
+
+    
     <script type="module" src="../js/caseManagement.js"></script>
+    <script type="module" src="../js/createCase.js"></script>
+    <script src="../../dist/bundle.js"></script>
+
     <script>
         document.querySelector(".logout").addEventListener("click", () => {
             localStorage.removeItem("loggedInUser"); // 清除登录信息

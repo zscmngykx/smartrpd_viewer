@@ -1,0 +1,630 @@
+{
+	"info": {
+		"_postman_id": "73f2d069-b7cd-432c-b2b4-0590f4d3abcd",
+		"name": "smartrpd",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "37809096"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let res = pm.response.json();\r",
+							"pm.environment.set(\"uuid\",  res.uuid);\r",
+							"pm.environment.set(\"email\", res.email);\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"connection": true,
+					"accept-encoding": true,
+					"accept": true,
+					"user-agent": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n  {\r\n    \"machine_id\": \"3a0df9c37b50873c63cebecd7bed73152a5ef616\"\r\n  },\r\n  {\r\n    \"username\": \"faid123\",\r\n    \"password\": \"faid30413041D**\"\r\n  }\r\n]\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://live.api.smartrpdai.com/api/smartrpd/user/login",
+					"protocol": "https",
+					"host": [
+						"live",
+						"api",
+						"smartrpdai",
+						"com"
+					],
+					"path": [
+						"api",
+						"smartrpd",
+						"user",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST Find All Cases",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"user-agent": true,
+					"accept": true,
+					"accept-encoding": true,
+					"connection": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n  {\r\n    \"machine_id\": \"{{machine_id}}\",\r\n    \"uuid\": \"{{uuid}}\"\r\n  },\r\n  {\r\n    \"uuid\": \"{{uuid}}\"\r\n  }\r\n]\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://live.api.smartrpdai.com/api/smartrpd/case/user/findall/get",
+					"protocol": "https",
+					"host": [
+						"live",
+						"api",
+						"smartrpdai",
+						"com"
+					],
+					"path": [
+						"api",
+						"smartrpd",
+						"case",
+						"user",
+						"findall",
+						"get"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Thumbnails",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept": true,
+					"accept-encoding": true,
+					"connection": true,
+					"user-agent": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n  {\r\n    \"machine_id\": \"{{machine_id}}\",\r\n    \"uuid\": \"{{uuid}}\",\r\n    \"caseIntID\": 1199\r\n  },\r\n  {\r\n    \"case_id\": 1199\r\n  }\r\n]\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://live.api.smartrpdai.com/api/smartrpd/thumbnails/get",
+					"protocol": "https",
+					"host": [
+						"live",
+						"api",
+						"smartrpdai",
+						"com"
+					],
+					"path": [
+						"api",
+						"smartrpd",
+						"thumbnails",
+						"get"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Find Case By ID",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"user-agent": true,
+					"accept": true,
+					"accept-encoding": true,
+					"connection": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n  {\r\n    \"machine_id\": \"{{machine_id}}\",\r\n    \"uuid\": \"{{uuid}}\",\r\n    \"caseIntID\": 1199\r\n  }\r\n]\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://live.api.smartrpdai.com/api/smartrpd/case/get/1199",
+					"protocol": "https",
+					"host": [
+						"live",
+						"api",
+						"smartrpdai",
+						"com"
+					],
+					"path": [
+						"api",
+						"smartrpd",
+						"case",
+						"get",
+						"1199"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Email Address",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"connection": true,
+					"accept-encoding": true,
+					"accept": true,
+					"user-agent": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"case_int_id\": 1199,\r\n  \"email\": \"test@example.com\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://live.api.smartrpdai.com/api/smartrpd/mailinglist/add",
+					"protocol": "https",
+					"host": [
+						"live",
+						"api",
+						"smartrpdai",
+						"com"
+					],
+					"path": [
+						"api",
+						"smartrpd",
+						"mailinglist",
+						"add"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Save Thumbnails",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n  {\r\n    \"machine_id\": \"{{machine_id}}\",\r\n    \"uuid\": \"{{uuid}}\",\r\n    \"caseIntID\": 1199\r\n  },\r\n  {\r\n    \"case_id\": 1199,\r\n    \"slot\":1,\r\n    \"data\": \"{{base64data}}\"\r\n  }\r\n]\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://live.api.smartrpdai.com/api/smartrpd/thumbnails",
+					"protocol": "https",
+					"host": [
+						"live",
+						"api",
+						"smartrpdai",
+						"com"
+					],
+					"path": [
+						"api",
+						"smartrpd",
+						"thumbnails"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get UUID",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"user-agent": true,
+					"accept": true,
+					"accept-encoding": true,
+					"connection": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n  {\r\n    \"machine_id\": \"{{machine_id}}\",\r\n    \"uuid\": \"{{uuid}}\"\r\n  },\r\n  {\r\n    \"username\": \"faid123\"\r\n  }\r\n]\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://live.api.smartrpdai.com/api/smartrpd/user/uuid/get",
+					"protocol": "https",
+					"host": [
+						"live",
+						"api",
+						"smartrpdai",
+						"com"
+					],
+					"path": [
+						"api",
+						"smartrpd",
+						"user",
+						"uuid",
+						"get"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Username",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n  {\r\n    \"machine_id\": \"{{machine_id}}\",\r\n    \"uuid\": \"{{uuid}}\"\r\n  },\r\n  {\r\n     \"uuid\": \"+Bk0G6EsbBaHdHCSDyCfCo9AZ8hd\"\r\n  }\r\n]\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://live.api.smartrpdai.com/api/smartrpd/user/username/get",
+					"protocol": "https",
+					"host": [
+						"live",
+						"api",
+						"smartrpdai",
+						"com"
+					],
+					"path": [
+						"api",
+						"smartrpd",
+						"user",
+						"username",
+						"get"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check If Username Exists",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"user-agent": true,
+					"accept": true,
+					"accept-encoding": true,
+					"connection": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n  {\r\n    \"machine_id\": \"{{machine_id}}\"\r\n  },\r\n  {\r\n    \"username\": \"faid123\"\r\n  }\r\n]\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://live.api.smartrpdai.com/api/smartrpd/user/checkifusernameexists/get",
+					"protocol": "https",
+					"host": [
+						"live",
+						"api",
+						"smartrpdai",
+						"com"
+					],
+					"path": [
+						"api",
+						"smartrpd",
+						"user",
+						"checkifusernameexists",
+						"get"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Note",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"connection": true,
+					"accept-encoding": true,
+					"accept": true,
+					"user-agent": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"case_int_id\": 1199,\r\n  \"author_username\": \"faid123\",\r\n  \"content\": \"This is a text note\",\r\n  \"image_base64\": null\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://live.api.smartrpdai.com/api/smartrpd/notes/create",
+					"protocol": "https",
+					"host": [
+						"live",
+						"api",
+						"smartrpdai",
+						"com"
+					],
+					"path": [
+						"api",
+						"smartrpd",
+						"notes",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Notes by Case ID",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept-encoding": true,
+					"accept": true,
+					"user-agent": true,
+					"connection": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://live.api.smartrpdai.com/api/smartrpd/notes/get/1199",
+					"protocol": "https",
+					"host": [
+						"live",
+						"api",
+						"smartrpdai",
+						"com"
+					],
+					"path": [
+						"api",
+						"smartrpd",
+						"notes",
+						"get",
+						"1199"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Clinical Info",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"connection": true,
+					"accept-encoding": true,
+					"accept": true,
+					"user-agent": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n  {\r\n    \"machine_id\": \"{{machine_id}}\",\r\n    \"uuid\": \"{{uuid}}\",\r\n    \"caseIntID\": 1199\r\n  },\r\n  {\r\n    \"case_id\": 1199\r\n  }\r\n]\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://live.api.smartrpdai.com/api/smartrpd/clinicalinfo/get/1199\n",
+					"protocol": "https",
+					"host": [
+						"live",
+						"api",
+						"smartrpdai",
+						"com"
+					],
+					"path": [
+						"api",
+						"smartrpd",
+						"clinicalinfo",
+						"get",
+						"1199\n"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Send Email",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"connection": true,
+					"accept": true,
+					"user-agent": true,
+					"accept-encoding": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"action\": \"case_saved\",                      // 动作类型，例如 case_saved / approved / rejected 等\r\n  \"case_id\": \"testsavingcase\",                // 业务层 case_id\r\n  \"case_int_id\": 1199,                        // 数据库中整数 ID\r\n  \"last_edited\": \"2024-05-19T10:30:00Z\",      // 上次编辑时间\r\n  \"username\": \"faid123\",                      // 发起者用户名\r\n  \"viewer_url\": \"https://example.com/viewer?id=1199\",   // 邮件中用于跳转的链接\r\n  \"thumbnail\": \"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...\"  // 缩略图（可选）\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://live.api.smartrpdai.com/api/smartrpd/sendEmail",
+					"protocol": "https",
+					"host": [
+						"live",
+						"api",
+						"smartrpdai",
+						"com"
+					],
+					"path": [
+						"api",
+						"smartrpd",
+						"sendEmail"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Undercutheatmap",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"connection": true,
+					"accept-encoding": true,
+					"accept": true,
+					"user-agent": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"machine_id\": \"3a0df9c37b50873c63cebecd7bed73152a5ef616\",\r\n  \"uuid\": \"AC4gRQXZJoNz9EhhW36Q8jMJXBsf\",\r\n  \"case_int_id\": 1199,\r\n  \"jaw_type\": 1,\r\n  \"caseIntID\": 1199\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://live.api.smartrpdai.com/api/smartrpd/undercutheatmap/get",
+					"protocol": "https",
+					"host": [
+						"live",
+						"api",
+						"smartrpdai",
+						"com"
+					],
+					"path": [
+						"api",
+						"smartrpd",
+						"undercutheatmap",
+						"get"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Logout",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept-encoding": true,
+					"accept": true,
+					"user-agent": true,
+					"connection": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n  {\r\n    \"machine_id\": \"{{machine_id}}\",\r\n    \"uuid\": \"{{uuid}}\"\r\n  },\r\n  {\r\n    \"uuid\": \"{{uuid}}\"\r\n  }\r\n]\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://live.api.smartrpdai.com/api/smartrpd/user/logout",
+					"protocol": "https",
+					"host": [
+						"live",
+						"api",
+						"smartrpdai",
+						"com"
+					],
+					"path": [
+						"api",
+						"smartrpd",
+						"user",
+						"logout"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
