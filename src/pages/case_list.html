@@ -137,19 +137,37 @@
             </div>
 
             <!-- Uploaded Jaw Models -->
-            <label class="input-label">Uploaded Jaw Models</label>
-            <div id="uploadedJawModels" class="uploaded-models">
+            <!-- 包裹两个上传区的外层容器 -->
+            <div class="upload-sections-row">
+            <!-- 左侧 Jaw -->
+            <div class="upload-section">
+                <label class="input-label">Uploaded Jaw Models</label>
+                <div id="uploadedJawModels" class="uploaded-models">
                 <div class="upload-placeholder" id="addJawModelBtn">
-                <span class="plus-icon">＋</span>
+                    <span class="plus-icon">＋</span>
                 </div>
+                </div>
+                <input type="file" id="jawUploadInput" accept=".stl" style="display: none;" />
             </div>
-            <input type="file" id="jawUploadInput" accept=".stl" style="display: none;" />
+
+            <!-- 右侧 Reference -->
+            <div class="upload-section">
+                <label class="input-label">Upload Reference Images</label>
+                <div id="uploadedReferenceImages" class="uploaded-models">
+                <div class="upload-placeholder" id="addRefImageBtn">
+                    <span class="plus-icon">＋</span>
+                </div>
+                </div>
+                <input type="file" id="refImageInput" accept="image/png,image/jpeg" style="display: none;" />
+            </div>
+            </div>
+
 
             <!-- Upload buttons -->
-            <div class="upload-buttons">
+            <!-- <div class="upload-buttons">
                 <button type="button" class="upload-btn upload-ref">⬆ UPLOAD REFERENCE IMAGES</button>
                 <button type="button" class="upload-btn upload-jaw">⬆ UPLOAD JAW MODELS</button>
-            </div>
+            </div> -->
 
             <!-- Footer buttons -->
             <div class="modal-footer">

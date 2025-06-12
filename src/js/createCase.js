@@ -7,6 +7,21 @@ document.addEventListener('DOMContentLoaded', () => {
   const modal = document.getElementById('caseModal');
   const closeBtn = document.getElementById('closeCaseModal');
 
+  const jawUploadBtn = document.getElementById('addJawModelBtn');
+  const jawUploadInput = document.getElementById('jawUploadInput');
+  const jawContainer = document.getElementById('uploadedJawModels');
+
+  const refUploadBtn = document.getElementById('addRefImageBtn');
+  const refUploadInput = document.getElementById('refImageInput');
+  const refContainer = document.getElementById('uploadedReferenceImages');
+
+  const caseNameInput = document.getElementById('caseName');
+  const requestDateInput = document.getElementById('requestDate');
+  const cancelBtn = document.querySelector('.cancel-btn');
+
+  let activeTarget = null;
+  const uploadLimit = 2;
+
   // 打开弹窗
   if (openBtn && modal) {
     openBtn.addEventListener('click', () => {
@@ -31,87 +46,149 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // STL 上传与渲染逻辑
-  const jawUploadBtn = document.getElementById('addJawModelBtn');
-  const jawUploadInput = document.getElementById('jawUploadInput');
-  const jawContainer = document.getElementById('uploadedJawModels');
+  /*** 👇 STL 上传逻辑（左边，最多两个） ***/
+  if (jawUploadBtn && jawUploadInput && jawContainer) {
+    jawUploadBtn.addEventListener('click', () => {
+      activeTarget = jawUploadBtn;
+      jawUploadInput.click();
+    });
 
-  if (!jawUploadBtn || !jawUploadInput || !jawContainer) {
-    console.warn("STL 上传区域缺少必要元素");
-    return;
-  }
+    function createUploadBtn() {
+      const newBtn = jawUploadBtn.cloneNode(true);
+      newBtn.id = ''; // 防止重复 ID
+      newBtn.addEventListener('click', () => {
+        activeTarget = newBtn;
+        jawUploadInput.click();
+      });
+      return newBtn;
+    }
 
-  jawUploadBtn.addEventListener('click', () => {
-    jawUploadInput.click();
-  });
+    jawUploadInput.addEventListener('change', (event) => {
+      const file = event.target.files[0];
+      if (!file || !activeTarget) return;
 
-  jawUploadInput.addEventListener('change', (event) => {
-  const file = event.target.files[0];
-  if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        try {
+          const loader = new STLLoader();
+          const geometry = loader.parse(e.target.result);
+          const material = new THREE.MeshNormalMaterial();
+          const mesh = new THREE.Mesh(geometry, material);
 
-  const reader = new FileReader();
-  reader.onload = function (e) {
-    try {
-      const loader = new STLLoader();
-      const geometry = loader.parse(e.target.result);
-      const material = new THREE.MeshNormalMaterial();
-      const mesh = new THREE.Mesh(geometry, material);
+          const scene = new THREE.Scene();
+          const light = new THREE.DirectionalLight(0xffffff, 1);
+          light.position.set(1, 1, 1).normalize();
+          scene.add(light);
+          scene.add(mesh);
 
-      const scene = new THREE.Scene();
-      const light = new THREE.DirectionalLight(0xffffff, 1);
-      light.position.set(1, 1, 1).normalize();
-      scene.add(light);
-      scene.add(mesh);
+          geometry.computeBoundingBox();
+          const center = geometry.boundingBox.getCenter(new THREE.Vector3());
+          mesh.position.sub(center);
 
-      geometry.computeBoundingBox();
-      const center = geometry.boundingBox.getCenter(new THREE.Vector3());
-      mesh.position.sub(center);
+          const width = 100;
+          const height = 100;
+          const camera = new THREE.PerspectiveCamera(70, width / height, 0.1, 1000);
+          camera.position.z = 100;
 
-      const width = 100;
-      const height = 100;
-      const camera = new THREE.PerspectiveCamera(70, width / height, 0.1, 1000);
-      camera.position.z = 100;
+          const renderer = new THREE.WebGLRenderer({ antialias: true });
+          renderer.setSize(width, height);
+          renderer.setClearColor(0xffffff);
+          renderer.render(scene, camera);
 
-      const renderer = new THREE.WebGLRenderer({ antialias: true });
-      renderer.setSize(width, height);
-      renderer.setClearColor(0xffffff);
+          const imgData = renderer.domElement.toDataURL();
 
-      renderer.render(scene, camera);
-      const imgData = renderer.domElement.toDataURL();
+          const wrapper = document.createElement('div');
+          wrapper.className = 'uploaded-model';
 
-      // 替换视图
-      jawContainer.innerHTML = '';
+          const img = document.createElement('img');
+          img.src = imgData;
+          img.style.width = '100px';
 
-      const wrapper = document.createElement('div');
-      wrapper.className = 'uploaded-model';
+          const remove = document.createElement('div');
+          remove.className = 'remove-model';
+          remove.textContent = '×';
+          remove.onclick = () => {
+            wrapper.replaceWith(createUploadBtn());
+          };
 
-      const img = document.createElement('img');
-      img.src = imgData;
-      img.style.width = '100px';
+          wrapper.appendChild(img);
+          wrapper.appendChild(remove);
+          activeTarget.replaceWith(wrapper);
 
-      const remove = document.createElement('div');
-      remove.className = 'remove-model';
-      remove.textContent = '×';
-      remove.onclick = () => {
-        // 恢复上传按钮
-        jawContainer.innerHTML = '';
-        const newBtn = jawUploadBtn.cloneNode(true);
-        newBtn.addEventListener('click', () => jawUploadInput.click());
-        jawContainer.appendChild(newBtn);
+          const currentUploadBtns = jawContainer.querySelectorAll('.upload-placeholder');
+          if (jawContainer.querySelectorAll('.uploaded-model').length + currentUploadBtns.length < uploadLimit) {
+            const newBtn = createUploadBtn();
+            jawContainer.appendChild(newBtn);
+          }
+
+          jawUploadInput.value = '';
+        } catch (err) {
+          console.error("STL 解析失败：", err);
+        }
       };
 
-      wrapper.appendChild(img);
-      wrapper.appendChild(remove);
-      jawContainer.appendChild(wrapper);
+      reader.readAsArrayBuffer(file);
+    });
+  }
 
-      // ✅ 最关键：重置 input，让同一个文件再次触发 change
-      jawUploadInput.value = '';
+  /*** 👇 PNG/JPG 图片上传逻辑（右边，无限上传） ***/
+  if (refUploadBtn && refUploadInput && refContainer) {
+    refUploadBtn.addEventListener('click', () => {
+      refUploadInput.click();
+    });
 
-    } catch (err) {
-      console.error("STL 解析失败：", err);
-    }
-  };
+    refUploadInput.addEventListener('change', (event) => {
+      const file = event.target.files[0];
+      if (!file || !file.type.startsWith('image/')) return;
 
-  reader.readAsArrayBuffer(file);
-  });
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'uploaded-model';
+
+        const img = document.createElement('img');
+        img.src = e.target.result;
+
+        const remove = document.createElement('div');
+        remove.className = 'remove-model';
+        remove.textContent = '×';
+        remove.onclick = () => wrapper.remove();
+
+        wrapper.appendChild(img);
+        wrapper.appendChild(remove);
+
+        refContainer.insertBefore(wrapper, refUploadBtn.nextSibling);
+      };
+
+      reader.readAsDataURL(file);
+    });
+  }
+
+  /*** 👇 取消按钮清空状态逻辑 ***/
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', () => {
+      // 清空输入框
+      caseNameInput.value = '';
+      requestDateInput.value = '';
+
+      // 清空 STL 上传区
+      jawContainer.innerHTML = '';
+      const resetJawBtn = jawUploadBtn.cloneNode(true);
+      resetJawBtn.id = 'addJawModelBtn';
+      resetJawBtn.addEventListener('click', () => {
+        activeTarget = resetJawBtn;
+        jawUploadInput.click();
+      });
+      jawContainer.appendChild(resetJawBtn);
+
+      // 清空图片上传区
+      refContainer.innerHTML = '';
+      const resetRefBtn = refUploadBtn.cloneNode(true);
+      resetRefBtn.id = 'addRefImageBtn';
+      resetRefBtn.addEventListener('click', () => {
+        refUploadInput.click();
+      });
+      refContainer.appendChild(resetRefBtn);
+    });
+  }
 });

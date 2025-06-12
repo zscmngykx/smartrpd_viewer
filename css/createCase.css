@@ -106,7 +106,7 @@
   color: #333;
 }
 
-/* 上传按钮区域 */
+上传按钮区域
 .upload-buttons {
   display: flex;
   justify-content: space-between;
@@ -114,7 +114,7 @@
   gap: 12px;
 }
 
-.upload-btn {
+/* .upload-btn {
   flex: 1;
   padding: 12px;
   font-weight: 600;
@@ -124,15 +124,15 @@
   border: none;
   border-radius: 6px;
   cursor: pointer;
-}
+} */
 
-.upload-btn.upload-ref {
+/* .upload-btn.upload-ref {
   background: #88abda;
 }
 
 .upload-btn.upload-jaw {
   background: #88abda;
-}
+} */
 
 .modal-footer {
   display: flex;
@@ -187,10 +187,10 @@
 }
 
 
-.upload-buttons,
+/* .upload-buttons,
 .modal-footer {
-  width: 100%; /* ✅ 保证和输入框等宽 */
-  box-sizing: border-box; /* ✅ 防止 padding 导致超宽 */
+  width: 100%;
+  box-sizing: border-box; 
 }
 
 
@@ -199,14 +199,14 @@
   justify-content: space-between;
   gap: 12px;
   margin-top: 24px;
-  align-self: stretch; /* ✅ 让按钮组自动与输入框宽度对齐 */
+  align-self: stretch; 
 }
 
 .upload-btn.upload-ref,
 .upload-btn.upload-jaw {
   flex: 1;
   min-width: 0;
-}
+} */
 
 .uploaded-model img {
   width: 100px;
@@ -234,4 +234,95 @@
 
 .uploaded-model {
   position: relative;  /* 仅加这句：提供定位上下文 */
+}
+
+.upload-sections-row {
+  display: flex;
+  flex-direction: row;
+  gap: 32px;         /* 间距可以调大或调小 */
+  margin-top: 10px;
+}
+
+.upload-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.upload-sections-row {
+  display: flex;
+  justify-content: space-between;  /* 让左右两边贴紧拉开 */
+  gap: 32px;
+  margin-top: 10px;
+}
+
+.upload-section {
+  flex: 1;                         /* 平分宽度 */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;         /* 保证文字 + 加号对齐左边 */
+}
+
+/* ✅ 用于右侧上传图片的缩略图展示（无限上传） */
+#uploadedReferenceImages {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  max-width: 100%;
+}
+
+#uploadedReferenceImages .uploaded-model {
+  position: relative;
+  width: 100px;
+  height: 100px;
+}
+
+#uploadedReferenceImages img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+#uploadedReferenceImages .remove-model {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  font-size: 16px;
+  color: #888;
+  cursor: pointer;
+  background: white;
+  border-radius: 50%;
+  padding: 0 4px;
+  line-height: 1;
+}
+
+#uploadedReferenceImages {
+  max-height: 300px;         /* 你可以按需调整高度 */
+  overflow-y: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.upload-placeholder {
+  width: 100px;
+  height: 100px;
+  background-color: #f2f2f2;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background 0.2s;
+  border: 1px solid #ccc; /* 可选：保持与图片缩略图一致的边框 */
+}
+
+.upload-placeholder:hover {
+  background-color: #e0e0e0;
+}
+
+.plus-icon {
+  font-size: 32px; /* 略大一点居中更好看 */
+  color: #333;
 }
