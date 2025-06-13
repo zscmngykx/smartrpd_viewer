@@ -7,6 +7,47 @@
 	},
 	"item": [
 		{
+			"name": "Logout",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept-encoding": true,
+					"accept": true,
+					"user-agent": true,
+					"connection": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n  {\r\n    \"machine_id\": \"{{machine_id}}\",\r\n    \"uuid\": \"{{uuid}}\"\r\n  },\r\n  {\r\n    \"uuid\": \"{{uuid}}\"\r\n  }\r\n]\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://live.api.smartrpdai.com/api/smartrpd/user/logout",
+					"protocol": "https",
+					"host": [
+						"live",
+						"api",
+						"smartrpdai",
+						"com"
+					],
+					"path": [
+						"api",
+						"smartrpd",
+						"user",
+						"logout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Login",
 			"event": [
 				{
@@ -106,6 +147,48 @@
 			"response": []
 		},
 		{
+			"name": "Get Clinical Info",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"connection": true,
+					"accept-encoding": true,
+					"accept": true,
+					"user-agent": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n  {\r\n    \"machine_id\": \"{{machine_id}}\",\r\n    \"uuid\": \"{{uuid}}\",\r\n    \"caseIntID\": 1199\r\n  },\r\n  {\r\n    \"case_id\": 1199\r\n  }\r\n]\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://live.api.smartrpdai.com/api/smartrpd/clinicalinfo/get/1199\n",
+					"protocol": "https",
+					"host": [
+						"live",
+						"api",
+						"smartrpdai",
+						"com"
+					],
+					"path": [
+						"api",
+						"smartrpd",
+						"clinicalinfo",
+						"get",
+						"1199\n"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Get All Thumbnails",
 			"protocolProfileBehavior": {
 				"disabledSystemHeaders": {
@@ -183,47 +266,6 @@
 						"case",
 						"get",
 						"1199"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Add Email Address",
-			"protocolProfileBehavior": {
-				"disabledSystemHeaders": {
-					"connection": true,
-					"accept-encoding": true,
-					"accept": true,
-					"user-agent": true
-				}
-			},
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"case_int_id\": 1199,\r\n  \"email\": \"test@example.com\"\r\n}\r\n",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "https://live.api.smartrpdai.com/api/smartrpd/mailinglist/add",
-					"protocol": "https",
-					"host": [
-						"live",
-						"api",
-						"smartrpdai",
-						"com"
-					],
-					"path": [
-						"api",
-						"smartrpd",
-						"mailinglist",
-						"add"
 					]
 				}
 			},
@@ -463,48 +505,6 @@
 			"response": []
 		},
 		{
-			"name": "Get Clinical Info",
-			"protocolProfileBehavior": {
-				"disabledSystemHeaders": {
-					"connection": true,
-					"accept-encoding": true,
-					"accept": true,
-					"user-agent": true
-				}
-			},
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "[\r\n  {\r\n    \"machine_id\": \"{{machine_id}}\",\r\n    \"uuid\": \"{{uuid}}\",\r\n    \"caseIntID\": 1199\r\n  },\r\n  {\r\n    \"case_id\": 1199\r\n  }\r\n]\r\n",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "https://live.api.smartrpdai.com/api/smartrpd/clinicalinfo/get/1199\n",
-					"protocol": "https",
-					"host": [
-						"live",
-						"api",
-						"smartrpdai",
-						"com"
-					],
-					"path": [
-						"api",
-						"smartrpd",
-						"clinicalinfo",
-						"get",
-						"1199\n"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "Send Email",
 			"protocolProfileBehavior": {
 				"disabledSystemHeaders": {
@@ -539,6 +539,47 @@
 						"api",
 						"smartrpd",
 						"sendEmail"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Email Address",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"connection": true,
+					"accept-encoding": true,
+					"accept": true,
+					"user-agent": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"case_int_id\": 1199,\r\n  \"email\": \"test@example.com\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://live.api.smartrpdai.com/api/smartrpd/mailinglist/add",
+					"protocol": "https",
+					"host": [
+						"live",
+						"api",
+						"smartrpdai",
+						"com"
+					],
+					"path": [
+						"api",
+						"smartrpd",
+						"mailinglist",
+						"add"
 					]
 				}
 			},
@@ -580,47 +621,6 @@
 						"smartrpd",
 						"undercutheatmap",
 						"get"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Logout",
-			"protocolProfileBehavior": {
-				"disabledSystemHeaders": {
-					"accept-encoding": true,
-					"accept": true,
-					"user-agent": true,
-					"connection": true
-				}
-			},
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "[\r\n  {\r\n    \"machine_id\": \"{{machine_id}}\",\r\n    \"uuid\": \"{{uuid}}\"\r\n  },\r\n  {\r\n    \"uuid\": \"{{uuid}}\"\r\n  }\r\n]\r\n",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "https://live.api.smartrpdai.com/api/smartrpd/user/logout",
-					"protocol": "https",
-					"host": [
-						"live",
-						"api",
-						"smartrpdai",
-						"com"
-					],
-					"path": [
-						"api",
-						"smartrpd",
-						"user",
-						"logout"
 					]
 				}
 			},

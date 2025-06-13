@@ -33,7 +33,7 @@ jobs:
 
       - name: Run unit tests
         run: |
-          echo "Running frontend tests..."
+          echo "Running tests..."
           npm run test
       - name: Install Newman for Postman testing
         run: |
