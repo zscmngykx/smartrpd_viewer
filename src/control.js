@@ -174,7 +174,7 @@ function addVisibilityAndTransparencyControls(parentObject, name, material_array
                             child.geometry.dispose();
                             child.geometry = mat;
                             child.geometry.needsUpdate = true;
-                        }
+                        }//1
                     });
                 }
                 if (jaw_type[child.userData.jaw_type][0]) {
