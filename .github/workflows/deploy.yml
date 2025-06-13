@@ -46,7 +46,9 @@ jobs:
           newman run postman/smartrpd.postman_collection.json \
             -e postman/smartrpd-env.postman_environment.json \
             --reporters cli \
-            --cookie-jar cookies.json
+            --cookie-jar ./cookies.json \
+            --insecure
+
   
   security_scan:
     runs-on: ubuntu-latest
