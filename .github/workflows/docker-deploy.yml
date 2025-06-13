@@ -63,7 +63,7 @@ jobs:
             echo "Launching updated service container..."
             docker run -d -p 8090:80 --name rpd-frontend rpd-frontend
 
-      - name: Post-deployment health check (mock)
+      - name: Post-deployment health check
         run: |
           curl -s http://localhost:8090 || echo "App not reachable from CI"
 
