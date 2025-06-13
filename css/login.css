@@ -63,16 +63,16 @@ input {
 }
 
 
-/* 另一种更浅的方式 */
+
 input::placeholder {
-    color: #ccc; /* 浅灰色 */
+    color: #ccc; 
 }
 
 
 button {
     width: 220px;
     padding: 12px;
-    background-color: #ba0a26;
+    background-color: black;
     color: white;
     border: none;
     cursor: pointer;
