@@ -19,7 +19,7 @@ window.addEventListener("DOMContentLoaded", () => {
       #chat-box .chat-message {
         font-size: 28px !important; /* 原 14px */
       }
-
+//
       .chat-message .timestamp {
         font-size: 20px !important; /* 原 10px */
       }
