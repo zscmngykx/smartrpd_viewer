@@ -72,13 +72,33 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
           const loader = new STLLoader();
           const geometry = loader.parse(e.target.result);
-          const material = new THREE.MeshNormalMaterial();
+          const material = new THREE.MeshStandardMaterial(
+            {color: new THREE.Color(197 / 255, 173 / 255, 137 / 255), opacity: 1
+        });
+          
           const mesh = new THREE.Mesh(geometry, material);
 
           const scene = new THREE.Scene();
-          const light = new THREE.DirectionalLight(0xffffff, 1);
-          light.position.set(1, 1, 1).normalize();
-          scene.add(light);
+          // Add lights to the scene, so we can actually see the 3D model
+            const ambientLight = new THREE.AmbientLight(0xffffff, 1); // Soft white light
+            scene.add(ambientLight);
+          
+            // Add directional lights from different directions for even lighting
+            const lights = [
+              new THREE.DirectionalLight(0xffffff, 1), // Front light
+              new THREE.DirectionalLight(0xffffff, 1), // Back light
+              new THREE.DirectionalLight(0xffffff, 1), // Left light
+              new THREE.DirectionalLight(0xffffff, 1), // Right light
+            ];
+          
+            lights[0].position.set(0, 0, 1);
+            lights[1].position.set(0, 0, -1);
+            lights[2].position.set(-1, 0, 0);
+            lights[3].position.set(1, 0, 0);
+          
+            lights.forEach(light => {
+              scene.add(light);
+            });
           scene.add(mesh);
 
           geometry.computeBoundingBox();
