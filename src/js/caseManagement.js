@@ -141,7 +141,7 @@ function sortCases(cases, key, order = 'asc') {
         return (valA < valB ? -1 : valA > valB ? 1 : 0) * (order === 'asc' ? 1 : -1);
     });
 }
-
+//1
 // 缩略图切换
 function updateThumbnail() {
     const image = document.getElementById("caseImage");
