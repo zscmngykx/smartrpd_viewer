@@ -22,12 +22,12 @@ window.addEventListener("DOMContentLoaded", () => {
 //
       .chat-message .timestamp {
         font-size: 20px !important; /* 原 10px */
-      }
+      }//
 
       .chat-message .author {
         font-size: 22px !important; /* 原 11px */
       }
-
+  
       .chat-message img {
         max-width: 240px !important;
         max-height: 240px !important;
