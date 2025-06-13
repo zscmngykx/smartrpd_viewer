@@ -1,4 +1,4 @@
-name: CI/CD to AWS
+name: CI/CD
 
 on:
   push:
@@ -35,6 +35,39 @@ jobs:
         run: |
           echo "Running frontend tests..."
           npm run test
+      - name: Install Newman for Postman testing
+        run: |
+          echo "Installing newman..."
+          npm install -g newman
+
+      - name: Run Postman integration tests
+        run: |
+          echo "Running Postman tests with newman..."
+          newman run postman/smartrpd.postman_collection.json \
+                     -e postman/smartrpd-env.postman_environment.json \
+                     --reporters cli
+  
+  security_scan:
+    runs-on: ubuntu-latest
+
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: javascript
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+
+      
 
   deploy:
     runs-on: ubuntu-latest
