@@ -89,6 +89,7 @@ button:hover {
 #error-message {
     color: red;
     font-size: 14px;
+    /*  */
 }
 
 /* ✅ 最小适配，只处理移动端基础问题 */
