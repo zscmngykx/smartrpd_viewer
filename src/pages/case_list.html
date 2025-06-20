@@ -141,14 +141,23 @@
             <div class="upload-sections-row">
             <!-- 左侧 Jaw -->
             <div class="upload-section">
-                <label class="input-label">Uploaded Jaw Models</label>
-                <div id="uploadedJawModels" class="uploaded-models">
-                <div class="upload-placeholder" id="addJawModelBtn">
+            <label class="input-label">Uploaded Jaw Models</label>
+            <div id="uploadedJawModels" class="uploaded-models">
+
+                <div class="upload-placeholder" data-jaw="upper">
+                    <img src="../../assets/upper.svg" class="jaw-bg" alt="Upper Jaw" />
                     <span class="plus-icon">＋</span>
                 </div>
+
+                <div class="upload-placeholder" data-jaw="lower">
+                    <img src="../../assets/lower.svg" class="jaw-bg" alt="Upper Jaw" />
+                    <span class="plus-icon">＋</span>
                 </div>
-                <input type="file" id="jawUploadInput" accept=".stl" style="display: none;" />
+
             </div>
+            <input type="file" id="jawUploadInput" accept=".stl" style="display: none;" />
+            </div>
+
 
             <!-- 右侧 Reference -->
             <div class="upload-section">
@@ -172,14 +181,39 @@
             <!-- Footer buttons -->
             <div class="modal-footer">
                 <button type="button" class="cancel-btn">CANCEL</button>
-                <button type="submit" class="invite-btn">CREATE AND INVITE USERS</button>
-                <button type="submit" class="start-btn">START</button>
+                <button type="button" class="invite-btn">CREATE AND INVITE USERS</button>
+                <button type="button" class="start-btn">START</button>
             </div>
             </form>
         </div>
     </div>
 
-    
+    <div id="userAccessModal" class="modal hidden">
+        <div class="modal-content">
+            <span id="closeUserAccessModal" class="close-btn">&times;</span>
+            <h3>User Access</h3>
+
+            <p><strong>Case Name:</strong> <span id="caseNameDisplay">000010</span></p>
+
+            <div class="input-with-button">
+            <input id="userSearchInput" type="text" placeholder="Search user to add to case" />
+            <button id="addUserBtn" disabled>ADD</button>
+            </div>
+
+            <ul id="userSearchResults" class="search-results"></ul>
+
+            <p><strong>Shared with:</strong></p>
+            <ul id="sharedUserList" class="shared-user-list"></ul>
+
+            <div class="modal-actions">
+            <button id="cancelInviteBtn" class="cancel-btn">CANCEL</button>
+            <button id="saveInviteBtn" class="save-btn">SAVE AND RETURN</button>
+            </div>
+        </div>
+    </div>
+
+            
+
     <script type="module" src="../js/caseManagement.js"></script>
     <script type="module" src="../js/createCase.js"></script>
     <script src="../../dist/bundle.js"></script>

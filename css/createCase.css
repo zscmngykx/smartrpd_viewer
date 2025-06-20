@@ -326,3 +326,234 @@
   font-size: 32px; /* 略大一点居中更好看 */
   color: #333;
 }
+
+
+.upload-placeholder {
+  position: relative;
+  overflow: hidden;
+  background-color: #f8f8f8;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  width: 100px;
+  height: 100px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.jaw-bg {
+  position: absolute;
+  width: 60%;
+  height: 60%;
+  opacity: 0.3; /* 淡淡的背景图 */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.plus-icon {
+  position: relative;
+  z-index: 1; /* 保证在 SVG 背景图上方 */
+  font-size: 24px;
+  color: #333;
+}
+
+/* 通用模态背景（共用） */
+#userAccessModal.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  justify-content: center;
+  align-items: center;
+}
+
+#userAccessModal.modal.show {
+  display: flex;
+}
+
+/* 主弹窗体 */
+#userAccessModal .modal-content {
+  background: #fff;
+  width: 700px;
+  max-width: 90%;
+  border-radius: 8px;
+  padding: 30px;
+  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.15);
+  position: relative;
+  font-family: "Segoe UI", sans-serif;
+}
+
+/* 标题 */
+#userAccessModal h3 {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+/* Case 名称行 */
+#userAccessModal p {
+  margin: 12px 0;
+  font-size: 15px;
+}
+
+#caseNameDisplay {
+  font-weight: 600;
+  color: #333;
+}
+
+/* 搜索输入和按钮组合 */
+.input-with-button {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
+
+#userSearchInput {
+  flex: 1;
+  padding: 10px 12px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+#addUserBtn {
+  padding: 10px 16px;
+  background-color: #88abda;
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#addUserBtn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* 搜索结果列表 */
+#userSearchResults {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 180px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  margin-bottom: 20px;
+}
+
+#userSearchResults li {
+  padding: 8px 12px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+}
+
+#userSearchResults li:hover {
+  background-color: #f0f0f0;
+}
+
+/* Shared User 列表 */
+#sharedUserList {
+  list-style: none;
+  padding: 0;
+  margin-top: 8px;
+}
+
+#sharedUserList li {
+  padding: 8px 12px;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  margin-bottom: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#sharedUserList li .remove-user-btn {
+  background: transparent;
+  color: #888;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* 关闭按钮 */
+#userAccessModal .close-btn {
+  position: absolute;
+  top: 18px;
+  right: 24px;
+  font-size: 24px;
+  color: #888;
+  cursor: pointer;
+}
+
+/* 底部按钮 */
+#userAccessModal .modal-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+}
+
+#cancelInviteBtn,
+#saveInviteBtn {
+  padding: 12px 20px;
+  font-weight: 600;
+  font-size: 14px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+#cancelInviteBtn {
+  background: rgb(245, 245, 245);
+  color: black;
+}
+
+#cancelInviteBtn:hover {
+  background: #cccccc !important;
+}
+
+#saveInviteBtn {
+  background: #88abda;
+  color: white;
+}
+
+
+.shared-user-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.shared-user-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 10px;
+  margin-bottom: 4px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+}
+
+.user-name {
+  font-weight: 500;
+}
+
+.user-role {
+  font-style: italic;
+  color: #555;
+}
+
