@@ -358,8 +358,8 @@ container3D.appendChild(thumbWrapper);
           ctx.fillText(text, canvas.width / 2, canvas.height / 2);
 
           const composedDataURL = canvas.toDataURL();
-          localStorage.setItem(`annotateBackground_${caseID}`, composedDataURL);
-          console.log(`✅ 已保存 annotateBackground_${caseID}`);
+          localStorage.setItem(`annotateBackground_${encryptedID}`, composedDataURL);
+          console.log(`✅ 已保存 annotateBackground_${encryptedID}`);
 
           // 🟢 跳转
           // 🟢 跳转（确保使用 URL 中的加密 ID）
