@@ -325,8 +325,7 @@ container3D.appendChild(thumbWrapper);
 
         const params = new URLSearchParams(window.location.search);
         const encryptedId = params.get('id');
-        const caseID = encryptedId; // ✅ 始终使用 URL 中的加密 ID
-
+        const caseID = window.caseID || encryptedId;
 
         if (!encryptedId) {
           alert("❌ 缺少参数，无法跳转 Annotate 页面");
@@ -349,7 +348,7 @@ container3D.appendChild(thumbWrapper);
         baseImage.onload = () => {
           ctx.drawImage(baseImage, 0, 0);
 
-          const text = `🦷 Case: ${window.caseID || "N/A"}`;
+          const text = `🦷 Case: ${caseID}`;
           ctx.font = 'bold 32px sans-serif';
           ctx.fillStyle = 'white';
           ctx.textAlign = 'center';
@@ -364,16 +363,16 @@ container3D.appendChild(thumbWrapper);
 
           // 🟢 跳转
           // 🟢 跳转（确保使用 URL 中的加密 ID）
-          const encryptedId = new URLSearchParams(window.location.search).get('id'); // ✅ 确保使用真实的加密 ID
+        const encryptedId = new URLSearchParams(window.location.search).get('id'); // ✅ 确保使用真实的加密 ID
 
-          const isGitHubPages = window.location.hostname.includes("github.io");
-          const isLocal = window.location.hostname === "localhost";
-          const queryConnector = isLocal ? "/?" : "?";
-          const basePath = isGitHubPages ? "/smartrpd_viewer" : "";
+        const isGitHubPages = window.location.hostname.includes("github.io");
+        const isLocal = window.location.hostname === "localhost";
+        const queryConnector = isLocal ? "/?" : "?";
+        const basePath = isGitHubPages ? "/smartrpd_viewer" : "";
 
-          const targetURL = `${window.location.origin}${basePath}/src/pages/2DAnnotation.html${queryConnector}id=${encryptedId}`;
-          console.log("🔁 正在跳转到 Annotate 页:", targetURL);
-          window.open(targetURL, "_blank");
+        const targetURL = `${window.location.origin}${basePath}/src/pages/2DAnnotation.html${queryConnector}id=${encryptedId}`;
+        console.log("🔁 正在跳转到 Annotate 页:", targetURL);
+        window.open(targetURL, "_blank");
 
         };
 
