@@ -266,6 +266,35 @@ container3D.appendChild(thumbWrapper);
 			  watermark.style.zIndex = '1';
 
 			  twodGroup.appendChild(watermark);
+        
+        // 1️⃣ 创建 canvas
+        const canvas = document.createElement('canvas');
+        canvas.width = enlargedImg.naturalWidth;
+        canvas.height = enlargedImg.naturalHeight;
+
+        const ctx = canvas.getContext('2d');
+
+        // 2️⃣ 绘制底图
+        const baseImage = new Image();
+        baseImage.onload = () => {
+          ctx.drawImage(baseImage, 0, 0);
+
+          // 3️⃣ 画水印文字
+          const text = `🦷 Case: ${window.caseID || "N/A"}`;
+          ctx.font = 'bold 32px sans-serif'; // ❗缩小到 32px
+          ctx.fillStyle = 'white';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+          ctx.shadowBlur = 10;
+          ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+
+          // 4️⃣ 转为 base64 并存入 localStorage
+          const composedDataURL = canvas.toDataURL();
+          localStorage.setItem('annotateBackground', composedDataURL);
+          console.log('✅ 保存到 localStorage:', composedDataURL);
+        };
+        baseImage.src = enlargedImg.src;
 
 			  // Buttons container
 			  const btnContainer2D = document.createElement('div');
@@ -283,19 +312,36 @@ container3D.appendChild(thumbWrapper);
 			  edit2D.onclick = () => sendEmail("Please do some modifications on 2D Design. See Notebox.");
 			  btnContainer2D.appendChild(edit2D);
         
-        // 🟢 新增：Annotate 按钮
+       // 🟣 创建 Annotate 按钮（跳转到 2DAnnotate.html）
         const annotateBtn = document.createElement('button');
         annotateBtn.className = 'smart-btn annotate';
         annotateBtn.textContent = 'Annotate';
-        // 这里直接写点击逻辑，切换 sidebar 显示
+
         annotateBtn.addEventListener('click', (e) => {
-          e.stopPropagation(); // 防止冒泡
-          const sidebar = document.getElementById('sidebarContainer');
-          if (sidebar) {
-            sidebar.classList.toggle('hidden'); // 👈 切换显示/隐藏
-          }
-        });
+        e.stopPropagation();
+
+        // ✅ 从 URL 中获取当前 case 的 id
+        const params = new URLSearchParams(window.location.search);
+        const encryptedId = params.get('id');
+
+        if (!encryptedId) {
+          alert("❌ 缺少参数，无法跳转 Annotate 页面");
+          return;
+        }
+
+        const isGitHubPages = window.location.hostname.includes("github.io");
+        const isLocal = window.location.hostname === "localhost";
+        const queryConnector = isLocal ? "/?" : "?";
+        const basePath = isGitHubPages ? "/smartrpd_viewer" : "";
+
+        const targetURL = `${window.location.origin}${basePath}/src/pages/2DAnnotation.html${queryConnector}id=${encryptedId}`;
+        console.log("🔁 正在跳转到 Annotate 页:", targetURL);
+        window.open(targetURL, "_blank");
+      });
+
+        // 插入按钮
         btnContainer2D.appendChild(annotateBtn);
+
 
 
         const historyBtn = document.createElement('button');
