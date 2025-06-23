@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <title>2D Annotate</title>
-  <link rel="stylesheet" href="/css/2Dannotation.css">
 </head>
 <body>
   <div id="main-container">
@@ -15,6 +14,15 @@
       <p class="info">✅ 当前加密 ID 为：<span id="decrypted-id">加载中...</span></p>
     </div>
   </div>
-<script type="module" src="/src/js/2Dannotation.js"></script>
+  <script>
+  const hostname = window.location.hostname;
+  const isGitHubPages = hostname.includes("github.io");
+  const basePath = isGitHubPages ? "/smartrpd_viewer" : "";
+
+  document.write(`
+    <link rel="stylesheet" href="${basePath}/css/2Dannotation.css" />
+    <script type="module" src="${basePath}/src/js/2Dannotation.js"></` + `script>
+  `);
+</script>
 </body>
 </html>
