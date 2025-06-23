@@ -1,11 +1,20 @@
 document.addEventListener('DOMContentLoaded', () => {
+  // ✅ 获取加密 ID
   const urlParams = new URLSearchParams(window.location.search);
   const encryptedId = urlParams.get('id') || 'N/A';
+
+  // ✅ 更新页面中展示的 ID
   document.getElementById('decrypted-id').textContent = encryptedId;
 
-  const composedImg = localStorage.getItem(`annotateBackground_${encryptedId}`);
+  // ✅ 构造 localStorage 的 key
+  const storageKey = `annotateBackground_${encryptedId}`;
+
+  // ✅ 获取图像容器并清空（防止多次渲染）
   const previewArea = document.getElementById('image-preview-area');
   previewArea.innerHTML = '';
+
+  // ✅ 从 localStorage 加载图像
+  const composedImg = localStorage.getItem(storageKey);
 
   if (composedImg) {
     const img = new Image();

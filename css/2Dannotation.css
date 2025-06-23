@@ -1,45 +1,55 @@
- html, body {
-      margin: 0;
-      padding: 0;
-      overflow-x: hidden; /* ✅ 防止出现横向滚动条 */
-      font-family: Arial, sans-serif;
-      background-color: #f8f9fa;
-    }
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* 防止横向滚动条 */
+  font-family: Arial, sans-serif;
+  background-color: #f8f9fa;
+  height: 100vh; /* 确保 viewport 高度可用 */
+}
 
-    #main-container {
-      display: flex;
-      flex-direction: row;
-      align-items: flex-start;
-      padding: 40px; /* ✅ 将 padding 移到容器上 */
-    }
+#main-container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 70px;
+  height: calc(100vh - 10px); /* 给出 padding 的高度空间 */
+  box-sizing: border-box;
+}
 
-    #image-preview-area {
-      width: 700px;
-      max-width: 100%;
-      margin-right: 40px;
-      border: 2px solid #ccc;
-      box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
-      padding: 10px;
-      background-color: white;
-      box-sizing: border-box;
-    }
+#image-preview-area {
+  height: 100%;                  /* 高度占满容器 */
+  margin-right: 40px;
+  border: 2px solid #ccc;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+  padding: 0;
+  background-color: white;
+  box-sizing: border-box;
+  overflow: hidden;
 
-    #image-preview-area img {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
+  width: auto;                  /* 不固定宽度，自动适应图像 */
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
 
-    #annotation-panel {
-      flex: 1;
-    }
+#image-preview-area img {
+  height: 100%;                 /* 高度占满容器 */
+  width: auto;                  /* 宽度自适应比例 */
+  display: block;
+  object-fit: contain;          /* 保证图像不被裁切 */
+}
 
-    h2 {
-      font-size: 24px;
-      margin-bottom: 20px;
-    }
+#annotation-panel {
+  flex: 1;
+  min-width: 300px;             /* 防止过小 */
+}
 
-    .info {
-      font-size: 18px;
-      margin-bottom: 10px;
-    }
+h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.info {
+  font-size: 18px;
+  margin-bottom: 10px;
+}

@@ -320,60 +320,65 @@ container3D.appendChild(thumbWrapper);
         annotateBtn.className = 'smart-btn annotate';
         annotateBtn.textContent = 'Annotate';
 
-        annotateBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
+       annotateBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
 
-          const params = new URLSearchParams(window.location.search);
-          const encryptedId = params.get('id');
-          const caseID = window.caseID || encryptedId;
+        const params = new URLSearchParams(window.location.search);
+        const encryptedId = params.get('id');
+        const caseID = encryptedId; // ✅ 始终使用 URL 中的加密 ID
 
-          if (!encryptedId) {
-            alert("❌ 缺少参数，无法跳转 Annotate 页面");
-            return;
-          }
 
-          // ✅ 重新生成图像并保存
-          const enlargedImg = document.querySelector('.twod-fullscreen-image');
-          if (!enlargedImg) {
-            alert("❌ 未找到图像，无法生成截图");
-            return;
-          }
+        if (!encryptedId) {
+          alert("❌ 缺少参数，无法跳转 Annotate 页面");
+          return;
+        }
 
-          const canvas = document.createElement('canvas');
-          canvas.width = enlargedImg.naturalWidth;
-          canvas.height = enlargedImg.naturalHeight;
-          const ctx = canvas.getContext('2d');
+        // ✅ 重新生成图像并保存
+        const enlargedImg = document.querySelector('.twod-fullscreen-image');
+        if (!enlargedImg) {
+          alert("❌ 未找到图像，无法生成截图");
+          return;
+        }
 
-          const baseImage = new Image();
-          baseImage.onload = () => {
-            ctx.drawImage(baseImage, 0, 0);
+        const canvas = document.createElement('canvas');
+        canvas.width = enlargedImg.naturalWidth;
+        canvas.height = enlargedImg.naturalHeight;
+        const ctx = canvas.getContext('2d');
 
-            const text = `🦷 Case: ${caseID}`;
-            ctx.font = 'bold 32px sans-serif';
-            ctx.fillStyle = 'white';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
-            ctx.shadowBlur = 10;
-            ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+        const baseImage = new Image();
+        baseImage.onload = () => {
+          ctx.drawImage(baseImage, 0, 0);
 
-            const composedDataURL = canvas.toDataURL();
-            localStorage.setItem(`annotateBackground_${caseID}`, composedDataURL);
-            console.log(`✅ 已保存 annotateBackground_${caseID}`);
+          const text = `🦷 Case: ${window.caseID || "N/A"}`;
+          ctx.font = 'bold 32px sans-serif';
+          ctx.fillStyle = 'white';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+          ctx.shadowBlur = 10;
+          ctx.fillText(text, canvas.width / 2, canvas.height / 2);
 
-            // 🟢 跳转
-            const isGitHubPages = window.location.hostname.includes("github.io");
-            const isLocal = window.location.hostname === "localhost";
-            const queryConnector = isLocal ? "/?" : "?";
-            const basePath = isGitHubPages ? "/smartrpd_viewer" : "";
-            const targetURL = `${window.location.origin}${basePath}/src/pages/2DAnnotation.html${queryConnector}id=${caseID}`;
-            console.log("🔁 正在跳转到 Annotate 页:", targetURL);
-            window.open(targetURL, "_blank");
-          };
+          const composedDataURL = canvas.toDataURL();
+          localStorage.setItem(`annotateBackground_${caseID}`, composedDataURL);
+          console.log(`✅ 已保存 annotateBackground_${caseID}`);
 
-          baseImage.src = enlargedImg.src;
-        });
+          // 🟢 跳转
+          // 🟢 跳转（确保使用 URL 中的加密 ID）
+          const encryptedId = new URLSearchParams(window.location.search).get('id'); // ✅ 确保使用真实的加密 ID
 
+          const isGitHubPages = window.location.hostname.includes("github.io");
+          const isLocal = window.location.hostname === "localhost";
+          const queryConnector = isLocal ? "/?" : "?";
+          const basePath = isGitHubPages ? "/smartrpd_viewer" : "";
+
+          const targetURL = `${window.location.origin}${basePath}/src/pages/2DAnnotation.html${queryConnector}id=${encryptedId}`;
+          console.log("🔁 正在跳转到 Annotate 页:", targetURL);
+          window.open(targetURL, "_blank");
+
+        };
+
+        baseImage.src = enlargedImg.src;
+      });
 
         // 插入按钮
         btnContainer2D.appendChild(annotateBtn);
