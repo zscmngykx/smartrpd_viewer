@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1024">
+    <title>Case List</title>
+    <link rel="stylesheet" href="../../css/case_list.css">
+    <link rel="stylesheet" href="../../css/createCase.css">
+</head>
+<body>
+
+    <div class="container">
+        <!-- 左侧主列表 -->
+        <div class="case-list">
+            <div class="case-header">
+                <button class="notifications">🔔 NOTIFICATIONS</button>
+                <div class="filter">
+                    <label for="filter-status">FILTER BY STATUS</label>
+                    <select id="filter-status" class="status-dropdown">
+                        <option value="all">ALL</option>
+                        <option value="draft">DRAFT</option>
+                        <option value="pending">PENDING REVIEW</option>
+                        <option value="reviewed">REVIEWED</option>
+                        <option value="fabricated">FABRICATED</option>
+                        <option value="framework_try_in">FRAMEWORK TRY IN</option>
+                        <option value="teeth_set_up">TEETH SET UP</option>
+                        <option value="teeth_try_in">TEETH TRY IN</option>
+                        <option value="completed">COMPLETED</option>
+                    </select>
+                </div>                
+                <button class="create-case">CREATE NEW CASE</button>
+                <button class="refresh">⟳ REFRESH</button>
+                <button class="logout">LOGOUT</button> 
+            </div>
+
+            <!-- <div class="case-tabs">
+                <button class="active">FOR CLINICIAN</button>
+                <button>FOR LAB</button>
+            </div> -->
+
+            <!-- 表头独立 -->
+            <table class="case-table">
+                <thead>
+                <tr>
+                    <th class="sortable" data-sort="case_id" style="width: 20%;">CASE NAME</th>
+                    <th class="sortable" data-sort="creation_date" style="width: 20%;">DATE CREATED</th>
+                    <th class="sortable" data-sort="expected_date" style="width: 20%;">DATE EXPECTED</th>
+                    <th class="sortable" data-sort="username" style="width: 20%;">CASE OWNER</th>
+                    <th class="sortable" data-sort="status" style="width: 22%;">CURRENT STATUS</th>
+                </tr>
+                </thead>
+            </table>
+            
+            <!-- 滚动区域只包含 tbody -->
+            <div class="table-body-wrapper">
+                <table class="case-table">
+                <tbody>
+                    <!-- JS 动态填充 -->
+                </tbody>
+                </table>
+            </div>
+  
+                    
+        </div>
+
+        <!-- 右侧详情区域 -->
+        <div class="case-details">
+            <div class="case-actions">
+                <button class="mark-important">⭐ MARK AS IMPORTANT</button>
+                <button class="mark-unread">🟢 UNREAD</button>
+            </div>
+
+            <div class="case-thumbnail">
+                <img id="caseImage">
+            </div>
+            <div class="image-navigation">
+                <button id="prevBtn">◀</button>
+                <span id="imageCounter">IMAGE 0 OF 0</span>
+                <button id="nextBtn">▶</button>
+            </div>
+            
+            
+            
+
+            <button class="case-dashboard">CASE DASHBOARD</button>
+
+            <div class="case-info">
+                <label for="status">STATUS:</label>
+                <select id="status">
+                    <option value="draft">DRAFT</option>
+                    <option value="pending">PENDING REVIEW</option>
+                    <option value="reviewed">REVIEWED</option>
+                    <option value="fabricated">FABRICATED</option>
+                    <option value="framework_try_in">FRAMEWORK TRY IN</option>
+                    <option value="teeth_set_up">TEETH SET UP</option>
+                    <option value="teeth_try_in">TEETH TRY IN</option>
+                    <option value="completed">COMPLETED</option>
+                </select>
+            
+                <p>CASE NAME: <span id="selected-case"></span></p>
+                <p>CREATED BY: <span id="created-by"></span></p>
+                <p>DATE CREATED: <span id="date-created"></span></p>
+                <p>LAST EDITED: <span id="last-edited"></span></p>
+            </div>
+            
+
+            <div class="start-case-container">
+                <button class="start-case-button">START CASE</button>
+                <div class="divider"></div> <!-- 这是新增的直线元素 -->
+                <button class="start-case-toggle">☰</button>
+            </div>
+            
+            
+            
+        </div>
+    </div>
+    
+    <div id="caseModal" class="modal hidden">
+        <div class="modal-content">
+            <!-- 关闭按钮 -->
+            <span id="closeCaseModal" class="close-btn">&times;</span>
+
+            <!-- 标题 -->
+            <h2 class="modal-title">Create a New Case</h2>
+
+            <!-- 表单 -->
+            <form id="newCaseForm" class="modal-form">
+            <!-- Case Name -->
+            <label for="caseName" class="input-label">Case Name <span style="color: red;">*</span></label>
+            <input type="text" id="caseName" class="modal-input" placeholder="New Case Name" required />
+
+            <!-- Request Date -->
+            <label for="requestDate" class="input-label">Request Date</label>
+            <div class="input-with-icon">
+                <input type="date" id="requestDate" class="modal-input" />
+                <span class="calendar-icon">📅</span>
+            </div>
+
+            <!-- Uploaded Jaw Models -->
+            <!-- 包裹两个上传区的外层容器 -->
+            <div class="upload-sections-row">
+            <!-- 左侧 Jaw -->
+            <div class="upload-section">
+            <label class="input-label">Uploaded Jaw Models</label>
+            <div id="uploadedJawModels" class="uploaded-models">
+
+                <div class="upload-placeholder" data-jaw="upper">
+                    <img src="../../assets/upper.svg" class="jaw-bg" alt="Upper Jaw" />
+                    <span class="plus-icon">＋</span>
+                </div>
+
+                <div class="upload-placeholder" data-jaw="lower">
+                    <img src="../../assets/lower.svg" class="jaw-bg" alt="Upper Jaw" />
+                    <span class="plus-icon">＋</span>
+                </div>
+
+            </div>
+            <input type="file" id="jawUploadInput" accept=".stl" style="display: none;" />
+            </div>
+
+
+            <!-- 右侧 Reference -->
+            <div class="upload-section">
+                <label class="input-label">Upload Reference Images</label>
+                <div id="uploadedReferenceImages" class="uploaded-models">
+                <div class="upload-placeholder" id="addRefImageBtn">
+                    <span class="plus-icon">＋</span>
+                </div>
+                </div>
+                <input type="file" id="refImageInput" accept="image/png,image/jpeg" style="display: none;" />
+            </div>
+            </div>
+
+
+            <!-- Upload buttons -->
+            <!-- <div class="upload-buttons">
+                <button type="button" class="upload-btn upload-ref">⬆ UPLOAD REFERENCE IMAGES</button>
+                <button type="button" class="upload-btn upload-jaw">⬆ UPLOAD JAW MODELS</button>
+            </div> -->
+
+            <!-- Footer buttons -->
+            <div class="modal-footer">
+                <button type="button" class="cancel-btn">CANCEL</button>
+                <button type="button" class="invite-btn">CREATE AND INVITE USERS</button>
+                <button type="button" class="start-btn">START</button>
+            </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="userAccessModal" class="modal hidden">
+        <div class="modal-content">
+            <span id="closeUserAccessModal" class="close-btn">&times;</span>
+            <h3>User Access</h3>
+
+            <p><strong>Case Name:</strong> <span id="caseNameDisplay">000010</span></p>
+
+            <div class="input-with-button">
+            <input id="userSearchInput" type="text" placeholder="Search user to add to case" />
+            <button id="addUserBtn" disabled>ADD</button>
+            </div>
+
+            <ul id="userSearchResults" class="search-results"></ul>
+
+            <p><strong>Shared with:</strong></p>
+            <ul id="sharedUserList" class="shared-user-list"></ul>
+
+            <div class="modal-actions">
+            <button id="cancelInviteBtn" class="cancel-btn">CANCEL</button>
+            <button id="saveInviteBtn" class="save-btn">SAVE AND RETURN</button>
+            </div>
+        </div>
+    </div>
+
+            
+
+    <script type="module" src="../js/caseManagement.js"></script>
+    <script type="module" src="../js/createCase.js"></script>
+    <script src="../../dist/bundle.js"></script>
+
+    <script>
+        document.querySelector(".logout").addEventListener("click", () => {
+            localStorage.removeItem("loggedInUser"); // 清除登录信息
+            window.location.href = "../../index.html"; 
+        });
+    </script>  
+</body>
+</html>
