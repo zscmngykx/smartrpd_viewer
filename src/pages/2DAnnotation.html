@@ -5,15 +5,40 @@
   <title>2D Annotate</title>
 </head>
 <body>
-  <div id="main-container">
-    <div id="image-preview-area">
-      <!-- 合成图像将插入在此处 -->
+  <div id="main-container" style="display: flex; align-items: flex-start;">
+    <div id="image-preview-area" style="position: relative;">
+    <!-- <canvas id="fabric-canvas" width="800" height="1000"
+    style="position: absolute; top: 0; left: 0; z-index: 10;"></canvas> -->
+      <!-- 合成图像将插入在此处 --> 
+       
     </div>
     <div id="annotation-panel">
-      <h2>🧪 2D Annotate 参数验证页</h2>
-      <p class="info">✅ 当前加密 ID 为：<span id="decrypted-id">加载中...</span></p>
+      <button id="cancelBtn">❌ CANCEL</button>
+      <button id="saveBtn">✅ SAVE AND CLOSE</button>
+
+      <div class="section-title">Currently Drawing</div>
+
+      <button id="arrowBtn">🔗 Connector</button>
+      <button id="textBtn">💬 Text Box</button>
+      <button id="clearBtn">🗑 Clear</button>
+      <button id="undoBtn">⤺ Undo</button>
+      <button id="redoBtn">⤻ Redo</button>
+      <button id="brushBtn">🖌 Brush</button>
+      <button id="penBtn">✏ Pen</button>
+      <button id="eraserBtn">🧼 Eraser</button>
+
+      <label for="sizeSlider">🪄 Size</label>
+      <input type="range" id="sizeSlider" min="1" max="50" value="10">
+
+      <label for="colorPicker" class="color-label">
+      <span class="palette-emoji">🎨</span>
+      </label>
+      <input type="color" id="colorPicker" value="#ba0a26">
+
     </div>
   </div>
+  <div id="eraser-cursor"></div>
+
   <script>
   const hostname = window.location.hostname;
   const isGitHubPages = hostname.includes("github.io");
@@ -24,5 +49,13 @@
     <script type="module" src="${basePath}/src/js/2Dannotation.js"></` + `script>
   `);
 </script>
+<script>
+  document.querySelector('.palette-emoji').addEventListener('click', () => {
+    document.getElementById('colorPicker').click();
+  });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
+
+
 </body>
 </html>

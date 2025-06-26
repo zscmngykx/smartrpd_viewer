@@ -4,11 +4,17 @@ html, body {
   overflow-x: hidden; /* 防止横向滚动条 */
   font-family: Arial, sans-serif;
   background-color: #f8f9fa;
-  height: 100vh; /* 确保 viewport 高度可用 */
+  height: 100vh;
+
+  /* ✅ 添加这些让主容器水平居中 */
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* 或 center 看你要不要垂直居中 */
 }
 
+
 #main-container {
-  display: flex;
+  /* display: flex; */
   flex-direction: row;
   align-items: flex-start;
   padding: 70px;
@@ -39,12 +45,9 @@ html, body {
   object-fit: contain;          /* 保证图像不被裁切 */
 }
 
-#annotation-panel {
-  flex: 1;
-  min-width: 300px;             /* 防止过小 */
-}
 
-h2 {
+
+/* h2 {
   font-size: 24px;
   margin-bottom: 20px;
 }
@@ -52,4 +55,111 @@ h2 {
 .info {
   font-size: 18px;
   margin-bottom: 10px;
+} */
+
+/* 标注栏 */
+
+#annotation-panel {
+  width: 320px;
+  height: 100%; /* 👈 让它与 image 区域等高 */
+  margin-left: 40px;
+  padding: 20px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  font-family: "Segoe UI", sans-serif;
+  color: #222;
+
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+}
+
+/* 所有按钮统一风格 */
+#annotation-panel button {
+  padding: 10px 12px;
+  margin: 6px 0;
+  font-size: 15px;
+  font-weight: 500;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+}
+
+#annotation-panel button:hover {
+  background-color: #e4e4e4;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+#annotation-panel button:active {
+  background-color: #dcdcdc;
+}
+
+/* 特别按钮强调色 */
+#cancelBtn {
+  background-color: #ffebeb;
+  color: #d10000;
+  border: 1px solid #ffa1a1;
+}
+#cancelBtn:hover {
+  background-color: #ffdada;
+}
+
+#saveBtn {
+  background-color: #e3ffe9;
+  color: #007f2f;
+  border: 1px solid #9decb2;
+}
+#saveBtn:hover {
+  background-color: #c8ffd7;
+}
+
+/* 标题样式 */
+.section-title {
+  margin: 20px 0 10px;
+  font-size: 16px;
+  font-weight: 600;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 4px;
+}
+
+/* 滑动条美化 */
+#sizeSlider {
+  width: 100%;
+  margin: 10px 0;
+}
+
+/* 颜色选择器行 */
+.color-label {
+  margin-top: 10px;
+  font-size: 14px;
+  display: inline-block;
+}
+
+#colorPicker {
+  width: 100%;
+  height: 36px;
+  border: none;
+  margin-top: 6px;
+  cursor: pointer;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.1);
+}
+
+#eraser-cursor {
+  position: absolute;
+  border: 2px solid rgba(255, 0, 0, 0.5);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  display: none;
 }

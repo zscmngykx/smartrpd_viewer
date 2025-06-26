@@ -349,7 +349,8 @@ container3D.appendChild(thumbWrapper);
           ctx.drawImage(baseImage, 0, 0);
 
           const text = `🦷 Case: ${caseID}`;
-          ctx.font = 'bold 32px sans-serif';
+          const fontSize = canvas.width * 0.034; // 相当于 3% 宽度
+          ctx.font = `bold ${fontSize}px sans-serif`;
           ctx.fillStyle = 'white';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
