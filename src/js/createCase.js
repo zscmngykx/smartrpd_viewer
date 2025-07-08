@@ -28,6 +28,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const closeUserAccessModal = document.getElementById("closeUserAccessModal");
   const cancelInviteBtn = document.getElementById("cancelInviteBtn");
   const userSearchInput = document.getElementById("userSearchInput");
+  const addUserBtn = document.getElementById("addUserBtn");
+  const caseNameDisplay = document.getElementById("caseNameDisplay");
+  const saveInviteBtn = document.getElementById("saveInviteBtn");
 
   let activeTarget = null;
   const uploadLimit = 2;
@@ -133,34 +136,35 @@ document.addEventListener("DOMContentLoaded", () => {
           remove.className = "remove-model";
           remove.textContent = "×";
           remove.onclick = () => {
-          delete wrapper.file; // ✅ 关键：彻底删除 file 引用，避免上传残留
+            delete wrapper.file; // ✅ 关键：彻底删除 file 引用，避免上传残留
 
-          const placeholder = document.createElement("div");
-          placeholder.className = "upload-placeholder";
-          placeholder.dataset.jaw = wrapper.dataset.jaw;
+            const placeholder = document.createElement("div");
+            placeholder.className = "upload-placeholder";
+            placeholder.dataset.jaw = wrapper.dataset.jaw;
 
-          const bgImg = document.createElement("img");
-          bgImg.className = "jaw-bg";
-          bgImg.alt = placeholder.dataset.jaw === "upper" ? "Upper Jaw" : "Lower Jaw";
-          bgImg.src = placeholder.dataset.jaw === "upper"
-            ? "../../assets/upper.svg"
-            : "../../assets/lower.svg";
+            const bgImg = document.createElement("img");
+            bgImg.className = "jaw-bg";
+            bgImg.alt =
+              placeholder.dataset.jaw === "upper" ? "Upper Jaw" : "Lower Jaw";
+            bgImg.src =
+              placeholder.dataset.jaw === "upper"
+                ? "../../assets/upper.svg"
+                : "../../assets/lower.svg";
 
-          const plus = document.createElement("span");
-          plus.className = "plus-icon";
-          plus.textContent = "＋";
+            const plus = document.createElement("span");
+            plus.className = "plus-icon";
+            plus.textContent = "＋";
 
-          placeholder.appendChild(bgImg);
-          placeholder.appendChild(plus);
+            placeholder.appendChild(bgImg);
+            placeholder.appendChild(plus);
 
-          placeholder.addEventListener("click", () => {
-            activeTarget = placeholder;
-            jawUploadInput.click();
-          });
+            placeholder.addEventListener("click", () => {
+              activeTarget = placeholder;
+              jawUploadInput.click();
+            });
 
-          wrapper.replaceWith(placeholder);
-        };
-
+            wrapper.replaceWith(placeholder);
+          };
 
           wrapper.appendChild(img);
           wrapper.appendChild(remove);
@@ -184,105 +188,102 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     refUploadInput.addEventListener("change", (event) => {
-  const file = event.target.files[0];
-  if (!file || !file.type.startsWith("image/")) return;
+      const file = event.target.files[0];
+      if (!file || !file.type.startsWith("image/")) return;
 
-  const reader = new FileReader();
-  reader.onload = function (e) {
-    const wrapper = document.createElement("div");
-    wrapper.className = "uploaded-model";
-    wrapper.file = file; // ✅ 保留 File 引用（用于后续上传逻辑）
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const wrapper = document.createElement("div");
+        wrapper.className = "uploaded-model";
+        wrapper.file = file; // ✅ 保留 File 引用（用于后续上传逻辑）
 
-    const img = document.createElement("img");
-    img.src = e.target.result;
+        const img = document.createElement("img");
+        img.src = e.target.result;
 
-    const remove = document.createElement("div");
-    remove.className = "remove-model";
-    remove.textContent = "×";
-    remove.onclick = () => {
-      delete wrapper.file;       // ✅ 彻底清除 File 引用
-      wrapper.remove();          // ✅ 移除视图
-      refUploadInput.value = ""; // ✅ 解决“再次选择相同图片不会触发”问题
-    };
+        const remove = document.createElement("div");
+        remove.className = "remove-model";
+        remove.textContent = "×";
+        remove.onclick = () => {
+          delete wrapper.file; // ✅ 彻底清除 File 引用
+          wrapper.remove(); // ✅ 移除视图
+          refUploadInput.value = ""; // ✅ 解决“再次选择相同图片不会触发”问题
+        };
 
-    wrapper.appendChild(img);
-    wrapper.appendChild(remove);
+        wrapper.appendChild(img);
+        wrapper.appendChild(remove);
 
-    refContainer.insertBefore(wrapper, refUploadBtn.nextSibling);
-  };
+        refContainer.insertBefore(wrapper, refUploadBtn.nextSibling);
+      };
 
-  reader.readAsDataURL(file);
-});
+      reader.readAsDataURL(file);
+    });
   }
 
-/*** 👇 取消按钮清空状态逻辑 ***/
-if (cancelBtn) {
-  cancelBtn.addEventListener("click", () => {
-    // 清空输入框
-    caseNameInput.value = "";
-    requestDateInput.value = "";
+  /*** 👇 取消按钮清空状态逻辑 ***/
+  if (cancelBtn) {
+    cancelBtn.addEventListener("click", () => {
+      // 清空输入框
+      caseNameInput.value = "";
+      requestDateInput.value = "";
 
-    // 删除所有文件引用（防止上传）
-    document.querySelectorAll(".uploaded-model").forEach((el) => {
-      delete el.file;
-    });
-
-    // 重置 STL 上传区（上下颌）
-    jawContainer.innerHTML = "";
-    ["upper", "lower"].forEach((jawType) => {
-      const placeholder = document.createElement("div");
-      placeholder.className = "upload-placeholder";
-      placeholder.dataset.jaw = jawType;
-
-      // ✅ 插入 SVG 背景图
-      const bgImg = document.createElement("img");
-      bgImg.className = "jaw-bg";
-      bgImg.alt = jawType === "upper" ? "Upper Jaw" : "Lower Jaw";
-      bgImg.src =
-        jawType === "upper"
-          ? "../../assets/upper.svg"
-          : "../../assets/lower.svg";
-
-      // ✅ 插入加号图标
-      const jawPlus = document.createElement("span");
-      jawPlus.className = "plus-icon";
-      jawPlus.textContent = "＋";
-
-      placeholder.appendChild(bgImg);
-      placeholder.appendChild(jawPlus);
-
-      // ✅ 绑定上传点击事件
-      placeholder.addEventListener("click", () => {
-        activeTarget = placeholder;
-        jawUploadInput.click();
+      // 删除所有文件引用（防止上传）
+      document.querySelectorAll(".uploaded-model").forEach((el) => {
+        delete el.file;
       });
 
-      jawContainer.appendChild(placeholder);
+      // 重置 STL 上传区（上下颌）
+      jawContainer.innerHTML = "";
+      ["upper", "lower"].forEach((jawType) => {
+        const placeholder = document.createElement("div");
+        placeholder.className = "upload-placeholder";
+        placeholder.dataset.jaw = jawType;
+
+        // ✅ 插入 SVG 背景图
+        const bgImg = document.createElement("img");
+        bgImg.className = "jaw-bg";
+        bgImg.alt = jawType === "upper" ? "Upper Jaw" : "Lower Jaw";
+        bgImg.src =
+          jawType === "upper"
+            ? "../../assets/upper.svg"
+            : "../../assets/lower.svg";
+
+        // ✅ 插入加号图标
+        const jawPlus = document.createElement("span");
+        jawPlus.className = "plus-icon";
+        jawPlus.textContent = "＋";
+
+        placeholder.appendChild(bgImg);
+        placeholder.appendChild(jawPlus);
+
+        // ✅ 绑定上传点击事件
+        placeholder.addEventListener("click", () => {
+          activeTarget = placeholder;
+          jawUploadInput.click();
+        });
+
+        jawContainer.appendChild(placeholder);
+      });
+
+      // 重置参考图上传区
+      refContainer.innerHTML = "";
+      const refPlaceholder = document.createElement("div");
+      refPlaceholder.className = "upload-placeholder";
+
+      const refPlus = document.createElement("span"); // ✅ 改名避免变量覆盖
+      refPlus.className = "plus-icon";
+      refPlus.textContent = "＋";
+      refPlaceholder.appendChild(refPlus);
+
+      refPlaceholder.addEventListener("click", () => {
+        refUploadInput.click();
+      });
+      refContainer.appendChild(refPlaceholder);
+
+      // 清空上传 input 的值
+      jawUploadInput.value = "";
+      refUploadInput.value = "";
     });
-
-    // 重置参考图上传区
-    refContainer.innerHTML = "";
-    const refPlaceholder = document.createElement("div");
-    refPlaceholder.className = "upload-placeholder";
-
-    const refPlus = document.createElement("span"); // ✅ 改名避免变量覆盖
-    refPlus.className = "plus-icon";
-    refPlus.textContent = "＋";
-    refPlaceholder.appendChild(refPlus);
-
-    refPlaceholder.addEventListener("click", () => {
-      refUploadInput.click();
-    });
-    refContainer.appendChild(refPlaceholder);
-
-    // 清空上传 input 的值
-    jawUploadInput.value = "";
-    refUploadInput.value = "";
-  });
-}
-
-
-
+  }
 
   if (startBtn) {
     startBtn.addEventListener("click", () => {
@@ -526,7 +527,9 @@ if (cancelBtn) {
       // ✅ Step 3: 打开邀请弹窗
       userAccessModal.classList.remove("hidden");
       userAccessModal.classList.add("show");
-      caseNameDisplay.textContent = caseName;
+      // caseNameDisplay.textContent = caseName;
+      const nameSpan = userAccessModal.querySelector(".case-name-display");
+      if (nameSpan) nameSpan.textContent = caseName;
 
       window._inviteContext = {
         caseName,
@@ -565,13 +568,110 @@ if (cancelBtn) {
         console.error("❌ Failed to fetch roles", err);
         sharedUserList.innerHTML = "<li>Failed to load users.</li>";
       }
+    });
+    console.log("caseNameDisplay = ", caseNameDisplay);
+  }
 
-      // ✅ Step 5: 初始化 UI 状态
-      addedUsers = [];
-      selectedUser = null;
-      userSearchInput.value = "";
-      userSearchResults.innerHTML = "";
-      addUserBtn.disabled = true;
+  // ✅ 绑定 ADD 按钮点击逻辑（确保可以多次添加）
+  if (addUserBtn && userSearchInput) {
+    const updateBtnState = () => {
+      const hasText = userSearchInput.value.trim().length > 0;
+      addUserBtn.disabled = false;
+      addUserBtn.style.pointerEvents = "auto";
+      addUserBtn.style.cursor = "pointer";
+      addUserBtn.style.backgroundColor = "#88abda";
+      // addUserBtn.disabled = !hasText;
+      // addUserBtn.style.pointerEvents = hasText ? "auto" : "none";
+      // addUserBtn.style.cursor = hasText ? "pointer" : "not-allowed";
+      // addUserBtn.style.backgroundColor = hasText ? "#88abda" : "#ccc";
+    };
+
+    updateBtnState(); // 初始化状态
+    userSearchInput.addEventListener("input", updateBtnState);
+
+    addUserBtn.addEventListener("click", async () => {
+      console.log("✅ ADD 按钮被点击");
+
+      const username = userSearchInput.value.trim();
+      if (!username) return;
+
+      const ctx = window._inviteContext;
+      if (!ctx || !ctx.caseIntID || !ctx.uuid || !ctx.machine_id) {
+        alert("❌ 无法获取 case 上下文，请刷新页面重试！");
+        return;
+      }
+
+      const { caseIntID, machine_id, uuid: ownerUUID } = ctx;
+
+      if (existingUsers.some((u) => u.username === username)) {
+        alert(`User "${username}" is already added.`);
+        return;
+      }
+
+      try {
+        // 1️⃣ 检查用户是否存在
+        const checkRes = await fetch(
+          "https://live.api.smartrpdai.com/api/smartrpd/user/checkIfUsernameExists/get",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify([{ machine_id }, { username }]),
+          }
+        );
+
+        const checkData = await checkRes.json();
+        if (!checkData || !checkData.uuid) {
+          throw new Error("User not found");
+        }
+
+        const targetUUID = checkData.uuid;
+
+        // 2️⃣ 添加为 co-owner
+        const roleRes = await fetch(
+          "https://live.api.smartrpdai.com/api/smartrpd/role",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify([
+              { machine_id, uuid: ownerUUID, caseIntID },
+              { role: 3, uuid: targetUUID, case_int_id: caseIntID },
+            ]),
+          }
+        );
+
+        if (!roleRes.ok) throw new Error("Add role failed");
+
+        // 3️⃣ 刷新共享用户
+        const refreshed = await fetch(
+          "https://live.api.smartrpdai.com/api/smartrpd/role/all/get",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify([
+              { machine_id, uuid: ownerUUID, caseIntID },
+              { case_int_id: caseIntID },
+            ]),
+          }
+        );
+
+        const refreshedData = await refreshed.json();
+        existingUsers = refreshedData;
+        renderSharedUserList();
+
+        // ✅ 清空输入框
+        userSearchInput.value = "";
+        updateBtnState();
+      } catch (err) {
+        console.error("❌ Failed to add user:", err);
+        alert("Failed to add user: " + err.message);
+      }
+    });
+  }
+
+  if (saveInviteBtn) {
+    saveInviteBtn.addEventListener("click", () => {
+      console.log("🔁 SAVE AND RETURN clicked → refreshing page");
+      location.reload(); // ✅ 重新加载页面
     });
   }
   if (closeUserAccessModal) {
@@ -582,72 +682,69 @@ if (cancelBtn) {
   }
 
   // ⛔ CANCEL 按钮：只清空搜索框，不关闭弹窗，不清空列表
-if (cancelBtn) {
-  cancelBtn.addEventListener('click', () => {
-    // ✅ 清空输入框
-    caseNameInput.value = '';
-    requestDateInput.value = '';
+  if (cancelBtn) {
+    cancelBtn.addEventListener("click", () => {
+      // ✅ 清空输入框
+      caseNameInput.value = "";
+      requestDateInput.value = "";
 
-    // ✅ 清空已上传的文件引用（防止上传残留）
-    document.querySelectorAll('.uploaded-model').forEach((el) => {
-      delete el.file;
-    });
-
-    // ✅ 重建 Jaw 模型上传区（包含牙模背景 + 加号）
-    jawContainer.innerHTML = '';
-    ['upper', 'lower'].forEach((jaw) => {
-      const placeholder = document.createElement('div');
-      placeholder.className = 'upload-placeholder';
-      placeholder.dataset.jaw = jaw;
-
-      // ✅ 添加牙模背景图
-      const bgImg = document.createElement('img');
-      bgImg.className = 'jaw-bg';
-      bgImg.alt = jaw === 'upper' ? 'Upper Jaw' : 'Lower Jaw';
-      bgImg.src = jaw === 'upper'
-        ? '../../assets/upper.svg'
-        : '../../assets/lower.svg';
-
-      // ✅ 加号图标
-      const plus = document.createElement('span');
-      plus.className = 'plus-icon';
-      plus.textContent = '＋';
-
-      placeholder.appendChild(bgImg);
-      placeholder.appendChild(plus);
-
-      // ✅ 点击上传事件
-      placeholder.addEventListener('click', () => {
-        activeTarget = placeholder;
-        jawUploadInput.click();
+      // ✅ 清空已上传的文件引用（防止上传残留）
+      document.querySelectorAll(".uploaded-model").forEach((el) => {
+        delete el.file;
       });
 
-      jawContainer.appendChild(placeholder);
+      // ✅ 重建 Jaw 模型上传区（包含牙模背景 + 加号）
+      jawContainer.innerHTML = "";
+      ["upper", "lower"].forEach((jaw) => {
+        const placeholder = document.createElement("div");
+        placeholder.className = "upload-placeholder";
+        placeholder.dataset.jaw = jaw;
+
+        // ✅ 添加牙模背景图
+        const bgImg = document.createElement("img");
+        bgImg.className = "jaw-bg";
+        bgImg.alt = jaw === "upper" ? "Upper Jaw" : "Lower Jaw";
+        bgImg.src =
+          jaw === "upper" ? "../../assets/upper.svg" : "../../assets/lower.svg";
+
+        // ✅ 加号图标
+        const plus = document.createElement("span");
+        plus.className = "plus-icon";
+        plus.textContent = "＋";
+
+        placeholder.appendChild(bgImg);
+        placeholder.appendChild(plus);
+
+        // ✅ 点击上传事件
+        placeholder.addEventListener("click", () => {
+          activeTarget = placeholder;
+          jawUploadInput.click();
+        });
+
+        jawContainer.appendChild(placeholder);
+      });
+
+      // ✅ 重建 Reference Image 上传入口
+      refContainer.innerHTML = "";
+      const refPlaceholder = document.createElement("div");
+      refPlaceholder.className = "upload-placeholder";
+
+      const refPlus = document.createElement("span");
+      refPlus.className = "plus-icon";
+      refPlus.textContent = "＋";
+
+      refPlaceholder.appendChild(refPlus);
+      refPlaceholder.addEventListener("click", () => {
+        refUploadInput.click();
+      });
+
+      refContainer.appendChild(refPlaceholder);
+
+      // ✅ 重置上传输入框
+      jawUploadInput.value = "";
+      refUploadInput.value = "";
     });
-
-    // ✅ 重建 Reference Image 上传入口
-    refContainer.innerHTML = '';
-    const refPlaceholder = document.createElement('div');
-    refPlaceholder.className = 'upload-placeholder';
-
-    const refPlus = document.createElement('span');
-    refPlus.className = 'plus-icon';
-    refPlus.textContent = '＋';
-
-    refPlaceholder.appendChild(refPlus);
-    refPlaceholder.addEventListener('click', () => {
-      refUploadInput.click();
-    });
-
-    refContainer.appendChild(refPlaceholder);
-
-    // ✅ 重置上传输入框
-    jawUploadInput.value = '';
-    refUploadInput.value = '';
-  });
-}
-
-
+  }
 });
 
 function getLoggedInUser() {

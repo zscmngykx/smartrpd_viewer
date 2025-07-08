@@ -158,7 +158,7 @@ button:hover {
     border-left: 2px solid #ddd;
 }
 
-.case-actions {
+/* .case-actions {
     display: flex;
     width: 100%; 
     gap: 5px; 
@@ -173,7 +173,7 @@ button:hover {
     flex: 1; 
     min-width: 100px; 
     max-width: 150px; 
-}
+} */
 
 .thumbnail-wrapper {
     display: flex;
@@ -349,6 +349,65 @@ button:hover {
     border-color: #88abda;
 }
 
+
+.case-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0; /* ✅ 保证上下间距一致 */
+  margin-bottom: 0px;  /* ✅ 新增这一行，控制和图片之间的距离 */
+}
+
+.case-name {
+  font-weight: bold;
+  font-size: 16px;
+  padding-left: 4px; /* ✅ 微调文字靠左 */
+}
+
+.dropdown-toggle {
+  background-color: transparent;   /* ✅ 无背景 */
+  color: black;                    /* ✅ 黑色 ⋯ */
+  border: none;
+  padding: 0;
+  margin: 0;
+  font-size: 22px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.dropdown-toggle:hover {
+  background-color: transparent!important;
+}
+
+
+.dropdown-menu-wrapper {
+  position: relative;
+}
+
+
+.dropdown-menu {
+  position: absolute;
+  top: 110%;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  width: 180px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  z-index: 100;
+}
+
+.dropdown-item {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background-color: #f7f7f7;
+}
+
+.hidden {
+  display: none;
+} 
 
   
     

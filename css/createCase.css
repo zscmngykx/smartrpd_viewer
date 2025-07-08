@@ -437,32 +437,6 @@
   cursor: pointer;
 }
 
-#addUserBtn:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
-
-/* 搜索结果列表 */
-#userSearchResults {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  max-height: 180px;
-  overflow-y: auto;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  margin-bottom: 20px;
-}
-
-#userSearchResults li {
-  padding: 8px 12px;
-  border-bottom: 1px solid #eee;
-  cursor: pointer;
-}
-
-#userSearchResults li:hover {
-  background-color: #f0f0f0;
-}
 
 /* Shared User 列表 */
 #sharedUserList {

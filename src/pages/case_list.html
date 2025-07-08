@@ -43,7 +43,7 @@
                 <thead>
                 <tr>
                     <th class="sortable" data-sort="case_id" style="width: 20%;">CASE NAME</th>
-                    <th class="sortable" data-sort="creation_date" style="width: 20%;">DATE CREATED</th>
+                    <th class="sortable" data-sort="creation_date" style="width: 20%;">DATE REQUESTED</th>
                     <th class="sortable" data-sort="expected_date" style="width: 20%;">DATE EXPECTED</th>
                     <th class="sortable" data-sort="username" style="width: 20%;">CASE OWNER</th>
                     <th class="sortable" data-sort="status" style="width: 22%;">CURRENT STATUS</th>
@@ -65,10 +65,25 @@
 
         <!-- 右侧详情区域 -->
         <div class="case-details">
-            <div class="case-actions">
+            <!-- <div class="case-actions">
                 <button class="mark-important">⭐ MARK AS IMPORTANT</button>
                 <button class="mark-unread">🟢 UNREAD</button>
+            </div> -->
+            <div class="case-actions">
+            <div class="case-name" id="caseNameDisplay"></div>
+            <div class="dropdown-menu-wrapper">
+                <button class="dropdown-toggle">⋯</button>
+                <div class="dropdown-menu hidden" id="caseDropdown">
+                <div class="dropdown-item" id="renameBtn">Rename</div>
+                <div class="dropdown-item" id="upload3dBtn">Upload 3D File</div>
+                <div class="dropdown-item" id="editUserAccessBtn">Edit User Access</div>
+                <div class="dropdown-item" id="viewVersionBtn">View Version History</div>
+                <div class="dropdown-item" id="duplicateBtn">Duplicate</div>
+                <div class="dropdown-item" id="deleteBtn">Delete</div>
+                </div>
             </div>
+            </div>
+
 
             <div class="case-thumbnail">
                 <img id="caseImage">
@@ -193,14 +208,16 @@
             <span id="closeUserAccessModal" class="close-btn">&times;</span>
             <h3>User Access</h3>
 
-            <p><strong>Case Name:</strong> <span id="caseNameDisplay">000010</span></p>
+            <p><strong>Case Name:</strong>
+                <span class="case-name-display">—</span>
+            </p>
+
 
             <div class="input-with-button">
             <input id="userSearchInput" type="text" placeholder="Search user to add to case" />
-            <button id="addUserBtn" disabled>ADD</button>
+            <button id="addUserBtn">ADD</button>
             </div>
 
-            <ul id="userSearchResults" class="search-results"></ul>
 
             <p><strong>Shared with:</strong></p>
             <ul id="sharedUserList" class="shared-user-list"></ul>
