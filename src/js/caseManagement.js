@@ -61,33 +61,34 @@ function populateTable(cases) {
 
   cases.forEach((caseItem) => {
     const row = document.createElement("tr");
-    row.innerHTML = `
-            <td style="width: 20%;">${caseItem.case_id || "N/A"}</td>
-            <td style="width: 20%;">${formatDateTime(
-              caseItem.creation_date
-            )}</td>
-            <td style="width: 20%;">${formatDateTime(
-              caseItem.expected_date
-            )}</td>
-            <td style="width: 20%;">${caseItem.username || "N/A"}</td>
-            <td style="width: 20%;">${caseItem.status || "N/A"}</td>
-        `;
 
-    // 绑定点击：触发 handleRowClick 并设置高亮
+    // 🔍 获取附加数据（包括 expected_date, new_status, assigned_to）
+    const extra = window.additionalCaseDetailsMap?.[caseItem.id] || {};
+
+    const dueDate = formatDateTime(extra.due_date); // timestamp 毫秒
+    const newStatus = extra.new_status || "N/A";
+    const assignedTo = extra.assigned_to || "N/A";
+
+    row.innerHTML = `
+      <td style="width: 20%;">${caseItem.case_id || "N/A"}</td>
+      <td style="width: 20%;">${formatDateTime(caseItem.creation_date)}</td>
+      <td style="width: 20%;">${dueDate}</td>
+      <td style="width: 20%;">${newStatus}</td>
+      <td style="width: 20%;">${assignedTo}</td>
+    `;
+
     row.addEventListener("click", () => {
       handleRowClick(caseItem.id);
 
-      // 清除其他行的 active 状态
       const allRows = tbody.querySelectorAll("tr");
       allRows.forEach((r) => r.classList.remove("active"));
-
-      // 当前行加上 active
       row.classList.add("active");
     });
 
     tbody.appendChild(row);
   });
 }
+
 
 // 点击某一行时获取病例详情
 async function handleRowClick(caseId) {
@@ -523,4 +524,41 @@ function renderSharedUserList() {
     li.appendChild(roleSpan);
     container.appendChild(li);
   });
+}
+
+async function fetchAdditionalCaseDetails(caseList) {
+  const loggedInUser = getLoggedInUser();
+  if (!loggedInUser || !caseList || caseList.length === 0) return {};
+
+  // 提取 caseIntIDs
+  const requestPayload = caseList.map((c) => ({
+    machine_id: "3a0df9c37b50873c63cebecd7bed73152a5ef616",
+    uuid: loggedInUser.uuid,
+    caseIntID: c.id,
+  }));
+
+  try {
+    const res = await fetch(
+      "https://live.api.smartrpdai.com/api/smartrpd/additionalcasedetails/getall",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(requestPayload),
+      }
+    );
+
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+
+    // 映射为 Map：case_int_id => detailObject
+    const map = {};
+    data.forEach((item) => {
+      map[item.case_int_id] = item;
+    });
+
+    return map;
+  } catch (err) {
+    console.error("❌ Failed to fetch additional case details:", err);
+    return {};
+  }
 }
