@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Test Get Drawn View</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+    }
+    img {
+      margin-top: 20px;
+      max-width: 100%;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+  <h2>🧪 Drawn View Test</h2>
+  <button id="loadBtn">Fetch Drawn Image</button>
+  <div id="result"></div>
+
+  <script>
+    const payload = [
+      {
+        machine_id: "3a0df9c37b50873c63cebecd7bed73152a5ef616",
+        uuid: "+Bk0G6EsbBaHdHCSDyCfCo9AZ8hd",
+        caseIntID: 1148
+      },
+      {
+        case_id: 1148
+      }
+    ];
+
+    document.getElementById("loadBtn").addEventListener("click", async () => {
+      const resultDiv = document.getElementById("result");
+      resultDiv.innerHTML = "⏳ Loading...";
+
+      try {
+        const res = await fetch("https://live.api.smartrpdai.com/api/smartrpd/noticeboard/editedview/get", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(payload)
+});
+
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+        const data = await res.json();
+        if (data && data.data) {
+          const img = new Image();
+          img.src = data.data;
+          img.alt = "Drawn View Image";
+          resultDiv.innerHTML = "";
+          resultDiv.appendChild(img);
+        } else {
+          resultDiv.innerHTML = "❌ No image data found.";
+        }
+      } catch (err) {
+        console.error("Fetch error:", err);
+        resultDiv.innerHTML = `❌ Error: ${err.message}`;
+      }
+    });
+  </script>
+</body>
+</html>
