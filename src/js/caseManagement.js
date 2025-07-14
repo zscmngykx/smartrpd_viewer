@@ -10,7 +10,6 @@ let currentSortOrder = "asc";
 let currentCases = [];
 let existingUsers = [];
 
-
 let currentThumbnails = [];
 let currentImageIndex = 0;
 window.selectedCaseId = null;
@@ -63,11 +62,16 @@ function populateTable(cases) {
     const row = document.createElement("tr");
 
     // 🔍 获取附加数据（包括 expected_date, new_status, assigned_to）
-    const extra = window.additionalCaseDetailsMap?.[caseItem.id] || {};
+    const dueDate = formatDateTime(caseItem.expected_date); // ✅ 与字段统一
+    const newStatus = caseItem.new_status || "N/A";
+    const assignedTo = caseItem.assigned_to || "N/A";
 
-    const dueDate = formatDateTime(extra.due_date); // timestamp 毫秒
-    const newStatus = extra.new_status || "N/A";
-    const assignedTo = extra.assigned_to || "N/A";
+    // row 开始处
+    // console.log("[row] id", caseItem.id, {
+    //   due_date: caseItem.due_date,
+    //   new_status: caseItem.new_status,
+    //   assigned_to: caseItem.assigned_to,
+    // });
 
     row.innerHTML = `
       <td style="width: 20%;">${caseItem.case_id || "N/A"}</td>
@@ -88,7 +92,6 @@ function populateTable(cases) {
     tbody.appendChild(row);
   });
 }
-
 
 // 点击某一行时获取病例详情
 async function handleRowClick(caseId) {
@@ -145,8 +148,10 @@ function displayCaseDetails(data) {
 }
 
 // 日期格式化
-function formatDateTime(timestamp) {
-  return timestamp ? new Date(timestamp * 1000).toLocaleString() : "N/A";
+function formatDateTime(ts) {
+  if (!ts) return "N/A";
+  const ms = ts.toString().length === 13 ? Number(ts) : Number(ts) * 1000; // 13 位说明已是毫秒
+  return new Date(ms).toLocaleString();
 }
 
 // 排序逻辑
@@ -154,19 +159,23 @@ function sortCases(cases, key, order = "asc") {
   return [...cases].sort((a, b) => {
     let valA = a[key] || "",
       valB = b[key] || "";
-    if (key.includes("date")) {
-      valA = new Date(valA * 1000);
-      valB = new Date(valB * 1000);
+     if (key.includes("date")) {
+      valA = new Date(+valA);
+      valB = new Date(+valB);
+
+      if (isNaN(valA)) return 1;
+      if (isNaN(valB)) return -1;
     } else {
       valA = valA.toString().toLowerCase();
       valB = valB.toString().toLowerCase();
     }
+
     return (
       (valA < valB ? -1 : valA > valB ? 1 : 0) * (order === "asc" ? 1 : -1)
     );
   });
 }
-//1
+
 // 缩略图切换
 function updateThumbnail() {
   const image = document.getElementById("caseImage");
@@ -266,13 +275,27 @@ document.addEventListener("DOMContentLoaded", async () => {
   const cases = await fetchCases();
 
   if (cases) {
-    currentCases = cases;
-    populateTable(cases);
+    // ① 拉扩展字段
+    const extraMap = (await fetchAdditionalCaseDetails(cases)) || {};
+    console.log("[extraMap]", extraMap);
+    // ② 合并到每个 case 上（找得到就塞进去）
+    cases.forEach((c) =>
+      Object.assign(
+        c,
+        extraMap[String(c.id)] || extraMap[String(c.case_int_id)] || {}
+      )
+    );
+    console.log("[after merge]", cases[0]);
+    currentCases = cases; // 放到 merge 之后
+    populateTable(currentCases);
 
     // 排序逻辑绑定
     document.querySelectorAll(".sortable").forEach((th) => {
       th.addEventListener("click", () => {
         const sortKey = th.dataset.sort;
+        console.log("🔍 正在排序字段：", sortKey);
+
+
         currentSortOrder =
           currentSortColumn === sortKey && currentSortOrder === "asc"
             ? "desc"
@@ -280,8 +303,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         currentSortColumn = sortKey;
 
         const sorted = sortCases(currentCases, sortKey, currentSortOrder);
-        populateTable(sorted);
+        currentCases = sorted; // ✅ 保证下一轮点击时用的是更新后的顺序
+        populateTable(sorted); // ✅ 每次点击都重新渲染
 
+        // 箭头样式更新（你原来就有）
         document
           .querySelectorAll(".sortable")
           .forEach((el) => el.classList.remove("active-asc", "active-desc"));
@@ -419,71 +444,76 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const editUserAccessBtn = document.getElementById("editUserAccessBtn");
 
-if (editUserAccessBtn) {
+  if (editUserAccessBtn) {
     editUserAccessBtn.addEventListener("click", async () => {
-        const caseId = window.selectedCaseId;
-        const user = getLoggedInUser();
+      const caseId = window.selectedCaseId;
+      const user = getLoggedInUser();
 
-        if (!caseId || !user?.uuid) {
-            alert("⚠️ Please select a case first.");
-            return;
-        }
+      if (!caseId || !user?.uuid) {
+        alert("⚠️ Please select a case first.");
+        return;
+      }
 
-        const caseObj = currentCases.find(c => c.id === caseId || c.case_id === caseId);
-        if (!caseObj) {
-            alert("⚠️ Case not found in current list.");
-            return;
-        }
+      const caseObj = currentCases.find(
+        (c) => c.id === caseId || c.case_id === caseId
+      );
+      if (!caseObj) {
+        alert("⚠️ Case not found in current list.");
+        return;
+      }
 
-        const caseName = caseObj.case_id;
-        const caseIntID = caseObj.id;
-        const uuid = user.uuid;
-        const machine_id = "3a0df9c37b50873c63cebecd7bed73152a5ef616";
+      const caseName = caseObj.case_id;
+      const caseIntID = caseObj.id;
+      const uuid = user.uuid;
+      const machine_id = "3a0df9c37b50873c63cebecd7bed73152a5ef616";
 
-        // ✅ 打开弹窗
-        userAccessModal.classList.remove("hidden");
-        userAccessModal.classList.add("show");
+      // ✅ 打开弹窗
+      userAccessModal.classList.remove("hidden");
+      userAccessModal.classList.add("show");
 
-        // ✅ 动态显示 Case Name
-        document.querySelectorAll(".case-name-display").forEach(el => {
-            el.textContent = caseName;
-        });
+      // ✅ 动态显示 Case Name
+      document.querySelectorAll(".case-name-display").forEach((el) => {
+        el.textContent = caseName;
+      });
 
-        // ✅ 设置上下文变量
-        window._inviteContext = {
-            caseName,
-            caseIntID,
-            uuid,
-            machine_id,
-        };
+      // ✅ 设置上下文变量
+      window._inviteContext = {
+        caseName,
+        caseIntID,
+        uuid,
+        machine_id,
+      };
 
-        // ✅ 获取已有共享用户
-        try {
-            const rolePayload = [
-                { machine_id, uuid, caseIntID },
-                { case_int_id: caseIntID },
-            ];
+      // ✅ 获取已有共享用户
+      try {
+        const rolePayload = [
+          { machine_id, uuid, caseIntID },
+          { case_int_id: caseIntID },
+        ];
 
-            const roleRes = await fetch("https://live.api.smartrpdai.com/api/smartrpd/role/all/get", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(rolePayload),
-            });
+        const roleRes = await fetch(
+          "https://live.api.smartrpdai.com/api/smartrpd/role/all/get",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(rolePayload),
+          }
+        );
 
-            const text = await roleRes.text();
-            if (!roleRes.ok) throw new Error(`Role fetch failed: ${roleRes.status}`);
+        const text = await roleRes.text();
+        if (!roleRes.ok)
+          throw new Error(`Role fetch failed: ${roleRes.status}`);
 
-            const roleData = JSON.parse(text);
-            existingUsers = roleData;
+        const roleData = JSON.parse(text);
+        existingUsers = roleData;
 
-            renderSharedUserList(); // ✅ 渲染已有成员
-        } catch (err) {
-            console.error("❌ Failed to fetch roles:", err);
-            sharedUserList.innerHTML = "<li>Failed to load users.</li>";
-        }
+        renderSharedUserList(); // ✅ 渲染已有成员
+      } catch (err) {
+        console.error("❌ Failed to fetch roles:", err);
+        sharedUserList.innerHTML = "<li>Failed to load users.</li>";
+      }
     });
-}
-
+  }
 });
 
 function renderSharedUserList() {
@@ -527,38 +557,47 @@ function renderSharedUserList() {
 }
 
 async function fetchAdditionalCaseDetails(caseList) {
-  const loggedInUser = getLoggedInUser();
-  if (!loggedInUser || !caseList || caseList.length === 0) return {};
+  const logged = getLoggedInUser();
+  if (!logged || !caseList?.length) return {};
 
-  // 提取 caseIntIDs
-  const requestPayload = caseList.map((c) => ({
-    machine_id: "3a0df9c37b50873c63cebecd7bed73152a5ef616",
-    uuid: loggedInUser.uuid,
-    caseIntID: c.id,
-  }));
+  const url =
+    "https://live.api.smartrpdai.com/api/smartrpd/additionalcasedetails/getall";
 
-  try {
-    const res = await fetch(
-      "https://live.api.smartrpdai.com/api/smartrpd/additionalcasedetails/getall",
+  // 并发请求 → Promise.all
+  const reqs = caseList.map((c) => {
+    const body = [
       {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(requestPayload),
-      }
-    );
+        machine_id: "3a0df9c37b50873c63cebecd7bed73152a5ef616",
+        uuid: logged.uuid,
+        caseIntID: c.case_int_id ?? c.id, // 兼容两种字段名
+      },
+    ];
 
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
+    return fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    })
+      .then((r) => (r.ok ? r.json() : [])) // 失败就当没数据
+      .then((arr) => arr[0]) // 接口返回 [ {...} ]
+      .catch(() => undefined);
+  });
 
-    // 映射为 Map：case_int_id => detailObject
-    const map = {};
-    data.forEach((item) => {
-      map[item.case_int_id] = item;
-    });
+  const results = await Promise.all(reqs);
 
-    return map;
-  } catch (err) {
-    console.error("❌ Failed to fetch additional case details:", err);
-    return {};
-  }
+  // 把有数据的条目塞进 map
+  const map = {};
+  results.forEach((item) => {
+    if (!item || !item.case_int_id) return;
+
+    const clean = {
+      expected_date: item.due_date,
+      new_status: item.new_status,
+      assigned_to: item.assigned_to,
+      comments: item.comments,
+    };
+    map[String(item.case_int_id)] = clean;
+  });
+
+  return map; // 只包含真的有附加数据的那些病例
 }
