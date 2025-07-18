@@ -163,3 +163,56 @@ html, body {
   z-index: 9999;
   display: none;
 }
+
+/* 1️⃣ 侧边标注面板——限制在视口内，高度超出时自己滚动 */
+#annotation-panel{
+  /* 如果原本就是 fixed/absolute，可以保留；否则下面两行可省略 */
+  position: fixed;          /* 让它跟随视口而非随页面滚动 */
+  top: 16px;                /* 你原来的定位值 */
+  right: 16px;
+
+  max-height: calc(100vh - 32px);  /* 始终不高于可视区 */
+  overflow-y: auto;        /* 垂直滚动只发生在面板内部 */
+  overflow-x: hidden;      /* 横向不滚动 */
+
+  padding: 16px;
+  box-sizing: border-box;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 6px rgba(0,0,0,.15);
+}
+
+/* 2️⃣ 按钮统一块级显示，行高在小屏压缩一点 */
+#annotation-panel button{
+  display: block;
+  width: 100%;
+  margin: 4px 0;
+  padding: 8px 12px;       /* 默认行高 */
+  font-size: 16px;
+}
+
+/* 小屏（≤750 px 高）再缩小按钮行高 */
+@media (max-height: 750px){
+  #annotation-panel button{
+    padding: 4px 8px;
+    font-size: 14px;
+  }
+}
+
+/* 3️⃣ 控件滚动条瘦身（可选美化） */
+#annotation-panel::-webkit-scrollbar{
+  width: 6px;
+}
+#annotation-panel::-webkit-scrollbar-thumb{
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+/* 4️⃣ 更窄屏时可折叠“尺寸/取色”这两个大块（可选）  */
+@media (max-height: 650px){
+  #sizeSlider,
+  #colorPicker,
+  .color-label{
+    display: none;
+  }
+}

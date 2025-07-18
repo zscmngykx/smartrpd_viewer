@@ -290,69 +290,76 @@ document.addEventListener("DOMContentLoaded", () => {
         canvas.freeDrawingBrush.width = parseInt(e.target.value, 10);
       });
 
-      document
-        .getElementById("saveBtn")
-        ?.addEventListener("click", async () => {
-          try {
-            const user = JSON.parse(localStorage.getItem("loggedInUser"));
-            if (!user || !user.uuid) {
-              alert("Login info not found, please log in again.");
-              return;
-            }
+      document.getElementById("saveBtn")?.addEventListener("click", async () => {
+  try {
+    /* ---------- 0. 校验登录 ---------- */
+    const user = JSON.parse(localStorage.getItem("loggedInUser"));
+    if (!user?.uuid) return alert("Login info not found, please log in again.");
 
-            const caseIntID = decryptedId;
-            const case_id = caseIntID;
-            const uuid = user.uuid;
-            const machine_id = "3a0df9c37b50873c63cebecd7bed73152a5ef616";
+    /* ---------- 1. 基本变量 ---------- */
+    const caseIntID  = decryptedId;           // 你的逻辑里已有
+    const case_id    = caseIntID;
+    const uuid       = user.uuid;
+    const machine_id = "3a0df9c37b50873c63cebecd7bed73152a5ef616";
 
-            const previewArea = document.getElementById("image-preview-area");
-            if (!previewArea) {
-              alert("❌ Preview area not found.");
-              return;
-            }
+    /* ---------- 2. 截图 ---------- */
+    const previewArea = document.getElementById("image-preview-area");
+    if (!previewArea) return alert("❌ Preview area not found.");
 
-            // ✅ 用 html2canvas 截图整个区域
-            const canvas = await html2canvas(previewArea, {
-              backgroundColor: null, // 保持透明
-              useCORS: true, // 如果图片跨域需要设置
-            });
+    const canvas   = await html2canvas(previewArea,{ backgroundColor:null, useCORS:true });
+    const dataURL  = canvas.toDataURL("image/png");
+    const fileName = `${Date.now()}.png`;
 
-            const dataURL = canvas.toDataURL("image/png");
+    /* ---------- 3. 先取旧记录 ---------- */
+    const getRes   = await fetch("https://live.api.smartrpdai.com/api/smartrpd/noticeboard/editedview/get",{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify([
+        { machine_id, uuid, caseIntID },
+        { case_id }
+      ])
+    });
 
-            const payload = [
-              {
-                machine_id,
-                uuid,
-                caseIntID,
-              },
-              {
-                case_id,
-                filenames: `${Date.now()}.png`,
-                data: dataURL,
-              },
-            ];
+    let namesArr = [], dataArr = [];
+    if (getRes.ok) {
+      const old = await getRes.json();   // 可能返回对象，也可能数组
+      const row = Array.isArray(old) ? old[0] : old;   // 取第一行
+      try { if (row?.filenames) namesArr = JSON.parse(row.filenames); } catch {}
+      try { if (row?.data)      dataArr  = JSON.parse(row.data);      } catch {}
+    }
+    /* ---------- 4. 追加新截图 ---------- */
+    namesArr.push(fileName);
+    dataArr .push(dataURL);
 
-            const res = await fetch(
-              "https://live.api.smartrpdai.com/api/smartrpd/noticeboard/editedview",
-              {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload),
-              }
-            );
+    /* ---------- 5. 重新上传完整数组 ---------- */
+    const payload = [
+      { machine_id, uuid, caseIntID },
+      {
+        case_id,
+        filenames: JSON.stringify(namesArr),
+        data:      JSON.stringify(dataArr)
+      }
+    ];
 
-            if (res.ok) {
-              alert("✅ Annotation saved successfully.");
-            } else {
-              const errMsg = await res.text();
-              alert("❌ Upload failed. Please check your network or server.");
-              console.error("Server returned:", errMsg);
-            }
-          } catch (err) {
-            console.error("❌ Request error:", err);
-            alert("❌ An error occurred during upload.");
-          }
-        });
+    const saveRes = await fetch("https://live.api.smartrpdai.com/api/smartrpd/noticeboard/editedview",{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    if (saveRes.ok) {
+      alert("✅ Annotation saved successfully.");
+    } else {
+      console.error("Server returned:", await saveRes.text());
+      alert("❌ Upload failed. Please check your network or server.");
+    }
+
+  } catch (err) {
+    console.error("❌ Request error:", err);
+    alert("❌ An error occurred during upload.");
+  }
+});
+
     };
   } else {
     const placeholder = document.createElement("p");
