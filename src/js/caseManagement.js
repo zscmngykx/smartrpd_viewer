@@ -74,12 +74,18 @@ function populateTable(cases) {
     // });
 
     row.innerHTML = `
-      <td style="width: 20%;">${caseItem.case_id || "N/A"}</td>
-      <td style="width: 20%;">${formatDateTime(caseItem.creation_date)}</td>
-      <td style="width: 20%;">${dueDate}</td>
-      <td style="width: 20%;">${newStatus}</td>
-      <td style="width: 20%;">${assignedTo}</td>
+      <td style="width: 18%;">${caseItem.case_id || "N/A"}</td>
+      <td style="width: 18%;">${formatDateTime(caseItem.creation_date)}</td>
+      <td style="width: 18%;">${dueDate}</td>
+      <td style="width: 18%;">${newStatus}</td>
+      <td style="width: 18%;">${assignedTo}</td>
+      <td style="width: 12%;">
+        <button class="icon-button" title="Attachment"><i class="fa fa-paperclip"></i></button>
+        <button class="icon-button" title="Download"><i class="fa fa-download"></i></button>
+        <button class="icon-button" title="Flag"><i class="fa fa-flag"></i></button>
+      </td>
     `;
+
 
     row.addEventListener("click", () => {
       handleRowClick(caseItem.id);
@@ -516,6 +522,45 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 });
 
+// function renderSharedUserList() {
+//   const container = document.getElementById("sharedUserList");
+
+//   if (!container) {
+//     console.warn("⚠️ Missing element: #sharedUserList");
+//     return;
+//   }
+
+//   // 清空旧内容
+//   container.innerHTML = "";
+
+//   // 如果没有用户，显示提示
+//   if (!existingUsers || existingUsers.length === 0) {
+//     const emptyItem = document.createElement("li");
+//     emptyItem.textContent = "No users found.";
+//     emptyItem.style.color = "#888";
+//     emptyItem.style.fontStyle = "italic";
+//     container.appendChild(emptyItem);
+//     return;
+//   }
+
+//   // 遍历用户并渲染每个条目
+//   existingUsers.forEach((user) => {
+//     const li = document.createElement("li");
+//     li.className = "shared-user-item";
+
+//     const nameSpan = document.createElement("span");
+//     nameSpan.className = "user-name";
+//     nameSpan.textContent = `👤 ${user.username}`;
+
+//     const roleSpan = document.createElement("span");
+//     roleSpan.className = "user-role";
+//     roleSpan.textContent = user.role;
+
+//     li.appendChild(nameSpan);
+//     li.appendChild(roleSpan);
+//     container.appendChild(li);
+//   });
+// }
 function renderSharedUserList() {
   const container = document.getElementById("sharedUserList");
 
@@ -541,6 +586,7 @@ function renderSharedUserList() {
   existingUsers.forEach((user) => {
     const li = document.createElement("li");
     li.className = "shared-user-item";
+    li.style.position = "relative"; // 用于定位小 ×
 
     const nameSpan = document.createElement("span");
     nameSpan.className = "user-name";
@@ -550,11 +596,58 @@ function renderSharedUserList() {
     roleSpan.className = "user-role";
     roleSpan.textContent = user.role;
 
+    // ✅ 删除按钮（右上角 ×）
+    const deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "×";
+    deleteBtn.title = "Remove user";
+    deleteBtn.className = "delete-user-btn";
+
+
+    // ⚠️ 如果缺失 uuid，不显示删除按钮
+    if (!user.uuid || user.role === "owner") {
+      deleteBtn.style.display = "none";
+    }
+
+    deleteBtn.addEventListener("click", async () => {
+      const confirmed = confirm(`Remove user ${user.username}?`);
+      if (!confirmed) return;
+
+      try {
+        const { caseIntID, uuid, machine_id } = window._inviteContext;
+        const payload = [
+          { machine_id, uuid, caseIntID },
+          { case_id: caseIntID, uuid: user.uuid }
+        ];
+
+        const res = await fetch(
+          "https://live.api.smartrpdai.com/api/smartrpd/role/delete",
+          {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          }
+        );
+
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        alert(`✅ User ${user.username} removed.`);
+
+        // 移除本地并刷新
+        existingUsers = existingUsers.filter((u) => u.uuid !== user.uuid);
+        renderSharedUserList();
+      } catch (err) {
+        console.error("❌ Failed to remove user:", err);
+        alert("❌ Failed to remove user.");
+      }
+    });
+
     li.appendChild(nameSpan);
     li.appendChild(roleSpan);
+    li.appendChild(deleteBtn); // ✅ 添加到右上角
     container.appendChild(li);
   });
 }
+
+
 
 async function fetchAdditionalCaseDetails(caseList) {
   const logged = getLoggedInUser();

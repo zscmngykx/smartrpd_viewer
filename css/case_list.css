@@ -409,8 +409,66 @@ button:hover {
   display: none;
 } 
 
-  
-    
-  
-  
-   
+/* 图标容器：水平排布图标 */
+.action-icons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0px; /* 控制图标之间的间距，6px 比较紧凑 */
+}
+
+/* 图标按钮本身 */
+.icon-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-size: 16px;
+  color: #808080;
+}
+
+.icon-button:hover {
+  background: none !important;   /* ✅ 强制移除悬浮背景 */
+  color: #000 !important;        /* ✅ 仅颜色变深 */
+}
+
+td {
+  padding: 0px 8px;
+  height: 30px; /* ✅ 控制行高度 */
+  line-height: 1;
+  vertical-align: middle;
+}
+/* 限制所有行的高度 */
+.case-table td,
+.case-table th {
+  padding: 0px 8px;
+  height: 30px;         /* ✅ 控制最大行高 */
+  line-height: 1.2;     /* ✅ 避免撑开 */
+  vertical-align: middle;
+  font-size: 16px;      /* ✅ 可选：适当压缩字体也有助于紧凑 */
+}
+
+/* .shared-user-item button:hover {
+  color: red !important;
+} */
+
+.delete-user-btn {
+  position: absolute;
+  top: 0px;
+  right: 2px;
+  border: none;
+  background: transparent !important;
+  font-size: 16px;
+  color: #888;
+  cursor: pointer;
+  padding: 0;
+}
+
+.delete-user-btn:hover {
+  color: red;
+  background: transparent !important;
+}
+
+.shared-user-item {
+  position: relative; /* 确保 delete 按钮能定位到右上角 */
+}

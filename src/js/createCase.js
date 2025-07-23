@@ -824,6 +824,46 @@ async function uploadSTL(
   });
 }
 
+// function renderSharedUserList() {
+//   const container = document.getElementById("sharedUserList");
+
+//   if (!container) {
+//     console.warn("⚠️ Missing element: #sharedUserList");
+//     return;
+//   }
+
+//   // 清空旧内容
+//   container.innerHTML = "";
+
+//   // 如果没有用户，显示提示
+//   if (!existingUsers || existingUsers.length === 0) {
+//     const emptyItem = document.createElement("li");
+//     emptyItem.textContent = "No users found.";
+//     emptyItem.style.color = "#888";
+//     emptyItem.style.fontStyle = "italic";
+//     container.appendChild(emptyItem);
+//     return;
+//   }
+
+//   // 遍历用户并渲染每个条目
+//   existingUsers.forEach((user) => {
+//     const li = document.createElement("li");
+//     li.className = "shared-user-item";
+
+//     const nameSpan = document.createElement("span");
+//     nameSpan.className = "user-name";
+//     nameSpan.textContent = `👤 ${user.username}`;
+
+//     const roleSpan = document.createElement("span");
+//     roleSpan.className = "user-role";
+//     roleSpan.textContent = user.role;
+
+//     li.appendChild(nameSpan);
+//     li.appendChild(roleSpan);
+//     container.appendChild(li);
+//   });
+// }
+
 function renderSharedUserList() {
   const container = document.getElementById("sharedUserList");
 
@@ -849,6 +889,7 @@ function renderSharedUserList() {
   existingUsers.forEach((user) => {
     const li = document.createElement("li");
     li.className = "shared-user-item";
+    li.style.position = "relative"; // 为右上角 × 做定位
 
     const nameSpan = document.createElement("span");
     nameSpan.className = "user-name";
@@ -858,11 +899,56 @@ function renderSharedUserList() {
     roleSpan.className = "user-role";
     roleSpan.textContent = user.role;
 
+    // ✅ 添加右上角删除按钮
+    // ✅ 删除按钮（右上角 ×）
+    const deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "×";
+    deleteBtn.title = "Remove user";
+    deleteBtn.className = "delete-user-btn";
+
+    // 隐藏删除按钮的条件：无 uuid 或为 owner
+    if (!user.uuid || user.role === "owner") {
+      deleteBtn.style.display = "none";
+    }
+
+    deleteBtn.addEventListener("click", async () => {
+      const confirmed = confirm(`Remove user ${user.username}?`);
+      if (!confirmed) return;
+
+      try {
+        const { caseIntID, uuid, machine_id } = window._inviteContext;
+        const payload = [
+          { machine_id, uuid, caseIntID },
+          { case_id: caseIntID, uuid: user.uuid }
+        ];
+
+        const res = await fetch(
+          "https://live.api.smartrpdai.com/api/smartrpd/role/delete",
+          {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          }
+        );
+
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        alert(`✅ User ${user.username} removed.`);
+
+        existingUsers = existingUsers.filter((u) => u.uuid !== user.uuid);
+        renderSharedUserList();
+      } catch (err) {
+        console.error("❌ Failed to remove user:", err);
+        alert("❌ Failed to remove user.");
+      }
+    });
+
     li.appendChild(nameSpan);
     li.appendChild(roleSpan);
+    li.appendChild(deleteBtn); // ✅ 添加小 ×
     container.appendChild(li);
   });
 }
+
 
 async function uploadReferenceImage(
   wrapperEl,

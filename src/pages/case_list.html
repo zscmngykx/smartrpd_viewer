@@ -6,6 +6,8 @@
     <title>Case List</title>
     <link rel="stylesheet" href="../../css/case_list.css">
     <link rel="stylesheet" href="../../css/createCase.css">
+    <link rel="stylesheet" href="../../css/notification.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
 
@@ -13,7 +15,17 @@
         <!-- 左侧主列表 -->
         <div class="case-list">
             <div class="case-header">
-                <button class="notifications">🔔 NOTIFICATIONS</button>
+                <button id="notificationBtn" class="notifications">🔔 NOTIFICATIONS</button>
+                <!-- 通知弹出框 -->
+                <div id="notificationPopup" class="notification-popup hidden">
+                <div class="notification-header">
+                    <span>NOTIFICATIONS</span>
+                    <button id="markAllBtn">MARK ALL AS READ</button>
+                </div>
+                <div id="notificationList" class="notification-list">
+                    <!-- 通知列表将由 JS 动态插入 -->
+                </div>
+                </div>
                 <div class="filter">
                     <label for="filter-status">FILTER BY STATUS</label>
                     <select id="filter-status" class="status-dropdown">
@@ -42,11 +54,12 @@
             <table class="case-table">
                 <thead>
                 <tr>
-                    <th class="sortable" data-sort="case_id" style="width: 20%;">CASE NAME</th>
-                    <th class="sortable" data-sort="creation_date" style="width: 20%;">DATE REQUESTED</th>
-                    <th class="sortable" data-sort="expected_date" style="width: 20%;">DUE DATE</th>
-                    <th class="sortable" data-sort="new_status" style="width: 20%;">STATUS</th>         <!-- ✅ 修正字段 -->
-                    <th class="sortable" data-sort="assigned_to" style="width: 20%;">ASSIGNED TO</th>   <!-- ✅ 修正字段 -->
+                    <th class="sortable" data-sort="case_id" style="width: 17%;">CASE NAME</th>
+                    <th class="sortable" data-sort="creation_date" style="width: 17%;">DATE REQUESTED</th>
+                    <th class="sortable" data-sort="expected_date" style="width: 17%;">DUE DATE</th>
+                    <th class="sortable" data-sort="new_status" style="width: 17%;">STATUS</th>         <!-- ✅ 修正字段 -->
+                    <th class="sortable" data-sort="assigned_to" style="width: 18%;">ASSIGNED TO</th>
+                    <th style="width: 12%;">ACTIONS</th>    <!-- ✅ 修正字段 -->
                 </tr>
                 </thead>
             </table>
@@ -233,6 +246,7 @@
 
     <script type="module" src="../js/caseManagement.js"></script>
     <script type="module" src="../js/createCase.js"></script>
+     <script type="module" src="../js/notifications.js"></script>
     <script src="../../dist/bundle.js"></script>
 
     <script>

@@ -29,6 +29,7 @@ async function login() {
         if (response.ok && data.successful) {
             const userInfo = {
                 uuid: data.uuid,
+                username: username, 
                 email: data.email,
                 isAdmin: data.isAdmin
             };
