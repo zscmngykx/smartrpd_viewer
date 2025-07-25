@@ -1,18 +1,15 @@
 (function () {
   const MACHINE_ID = "3a0df9c37b50873c63cebecd7bed73152a5ef616";
 
-  /* ==== DOM ==== */
   const notifBtn   = document.getElementById("notificationBtn");
   const notifPopup = document.getElementById("notificationPopup");
   const notifList  = document.getElementById("notificationList");
   const markAllBtn = document.getElementById("markAllBtn");
 
-  /* ==== 登录信息 ==== */
   const user = JSON.parse(localStorage.getItem("loggedInUser"));
   if (!user || !user.uuid) return;
   const USERNAME = user.username || (user.email ? user.email.split("@")[0] : "");
 
-  /* ==== 弹窗开关 ==== */
   notifBtn.addEventListener("click", () => {
     notifPopup.classList.toggle("hidden");
     if (!notifPopup.classList.contains("hidden")) loadNotifications();
@@ -22,11 +19,10 @@
       notifPopup.classList.add("hidden");
   });
 
-  /* ==== 加载通知 ==== */
   async function loadNotifications() {
     notifList.innerHTML = "<div style='padding:12px'>Loading…</div>";
     try {
-      /* A. 取全部 case */
+      // A. 先拿当前用户的所有 case
       const caseRes = await fetch(
         "https://live.api.smartrpdai.com/api/smartrpd/case/user/findall/get",
         {
@@ -38,14 +34,18 @@
           ])
         }
       );
-      if (!caseRes.ok) throw new Error("case fetch");
+      if (!caseRes.ok) throw new Error("case fetch failed");
       const caseArr = await caseRes.json();
       if (!Array.isArray(caseArr)) throw new Error("case list not array");
 
-      /* ★ 1. 取 id 后去重 */
+      // A.1 建 id->name 映射，统一用字符串 key
+      const caseNameMap = {};
+      caseArr.forEach(c => { caseNameMap[String(c.id)] = c.case_id; });
+
+      // A.2 去重 case id
       const caseIDs = [...new Set(caseArr.map(c => c.id))];
 
-      /* B. 逐 case 拉取 alert */
+      // B. per case 拉取 alerts
       const allAlerts = [];
       for (const cid of caseIDs) {
         const aRes = await fetch(
@@ -65,9 +65,36 @@
         }
       }
 
-      /* ★ 2. 按 alert.id 再去重，然后渲染 */
+      // C. 去重（按 alert.id）
       const uniqueAlerts = [...new Map(allAlerts.map(a => [a.id, a])).values()];
-      render(uniqueAlerts);
+
+      // D. 对缺名字的 case 再兜底查一次
+      const missingIds = [...new Set(
+        uniqueAlerts.filter(a => !caseNameMap[String(a.case_int_id)])
+                    .map(a => a.case_int_id)
+      )];
+
+      await Promise.all(missingIds.map(async cid => {
+        try {
+          const r = await fetch(
+            `https://live.api.smartrpdai.com/api/smartrpd/case/get/${cid}`,
+            {
+              method : "POST",
+              headers: { "Content-Type": "application/json" },
+              body   : JSON.stringify([
+                { machine_id: MACHINE_ID, uuid: user.uuid, caseIntID: cid }
+              ])
+            }
+          );
+          if (r.ok) {
+            const d = await r.json();
+            if (d && d.case_id) caseNameMap[String(cid)] = d.case_id;
+          }
+        } catch (_) {}
+      }));
+
+      // E. 渲染
+      render(uniqueAlerts, caseNameMap);
     } catch (e) {
       notifList.innerHTML =
         "<div style='padding:16px;color:red;'>加载失败</div>";
@@ -75,39 +102,51 @@
     }
   }
 
-  /* ==== 渲染 ==== */
-  function render(arr) {
+  function render(list, nameMap) {
     notifList.innerHTML = "";
-    if (!arr.length) {
+    if (!Array.isArray(list) || !list.length) {
       notifList.innerHTML = "<div style='padding:16px;'>No notifications.</div>";
       return;
     }
-    arr.forEach(a => {
+
+    // 新的在上
+    list.sort((a, b) => b.id - a.id);
+
+    list.forEach(a => {
+      const hasStatus  = a.new_status !== undefined && a.new_status !== null && a.new_status !== "";
+      const caseName   = nameMap[String(a.case_int_id)] || `Case ${a.case_int_id}`;
+      const msgPart    = a.alert_message ? `, with message “${a.alert_message}”` : "";
+      let line;
+
+      if (hasStatus) {
+        line = `<strong>${a.from_user}</strong> has updated the status of <strong>${caseName}</strong> to <strong>${a.new_status}</strong>${msgPart}`;
+      } else {
+        line = `<strong>${a.from_user}</strong> has invited you to <strong>${caseName}</strong>${msgPart}`;
+      }
+
       const div = document.createElement("div");
       div.className = "notification-item" + (a.read_status ? "" : " unread");
       div.innerHTML = `
         <div>
           ${a.read_status ? "" : '<span class="blue-dot"></span>'}
-          <strong>${a.from_user}</strong> updated 
-          <strong>Case ${a.case_int_id}</strong> to 
-          <strong>${a.new_status}</strong>
-          ${a.alert_message ? `, “${a.alert_message}”` : ""}
+          ${line}
         </div>
-        <div class="notification-time">${pretty(a.create_date)}</div>`;
+        <div class="notification-time">${pretty(a.create_date)}</div>
+      `;
       notifList.appendChild(div);
     });
   }
 
-  const pretty = t =>
-    !t
-      ? ""
-      : ((d = Math.floor((Date.now() - new Date(t)) / 60000)) =>
-          d < 1 ? "just now" :
-          d < 60 ? `${d} min ago` :
-          d < 1440 ? `${(d/60)|0} h ago` :
-          new Date(t).toLocaleDateString())();
+  const pretty = t => {
+    if (!t) return "";
+    const diffMin = Math.floor((Date.now() - new Date(t)) / 60000);
+    if (diffMin < 1)  return "just now";
+    if (diffMin < 60) return `${diffMin} min ago`;
+    const diffH = diffMin / 60 | 0;
+    if (diffH < 24)  return `${diffH} h ago`;
+    return new Date(t).toLocaleDateString();
+  };
 
-  /* ==== 一键已读 ==== */
   markAllBtn.addEventListener("click", async () => {
     await fetch(
       "https://live.api.smartrpdai.com/api/smartrpd/alerts/setreadstatus",

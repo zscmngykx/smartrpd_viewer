@@ -580,10 +580,6 @@ document.addEventListener("DOMContentLoaded", () => {
       addUserBtn.style.pointerEvents = "auto";
       addUserBtn.style.cursor = "pointer";
       addUserBtn.style.backgroundColor = "#88abda";
-      // addUserBtn.disabled = !hasText;
-      // addUserBtn.style.pointerEvents = hasText ? "auto" : "none";
-      // addUserBtn.style.cursor = hasText ? "pointer" : "not-allowed";
-      // addUserBtn.style.backgroundColor = hasText ? "#88abda" : "#ccc";
     };
 
     updateBtnState(); // 初始化状态
@@ -640,6 +636,31 @@ document.addEventListener("DOMContentLoaded", () => {
         );
 
         if (!roleRes.ok) throw new Error("Add role failed");
+        // 2.5️⃣ 发送通知（忽略 new_status）
+try {
+  const from_user = getLoggedInUser()?.username || "";
+  const alertPayload = [
+    { machine_id, uuid: ownerUUID, caseIntID },
+    {
+      case_int_id: caseIntID,
+      to_user: username,                // 被邀请的人
+      from_user,                        // 当前登录的人
+      alert_message: `You have been added to case "${ctx.caseName}" by ${from_user}.`,
+      read_status: 0,
+      deleted: 0
+    }
+  ];
+
+  await fetch("https://live.api.smartrpdai.com/api/smartrpd/alerts", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(alertPayload)
+  });
+
+  console.log("✅ Alert sent to", username);
+} catch (e) {
+  console.warn("⚠️ Failed to send alert:", e);
+}
 
         // 3️⃣ 刷新共享用户
         const refreshed = await fetch(
