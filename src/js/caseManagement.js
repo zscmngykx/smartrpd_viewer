@@ -352,10 +352,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
       }
 
-      // const encryptedId = lol(caseId);
-      // const targetURL = `${window.location.origin}/src/pages/ThreeDViewer.html/?id=${encryptedId}`;
-      // console.log("🚀 Jumping to:", targetURL);
-      // window.open(targetURL, "_blank");
       const encryptedId = lol(caseId);
       const isGitHubPages = window.location.hostname.includes("github.io");
       const isLocal = window.location.hostname === "localhost";
@@ -520,47 +516,89 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     });
   }
+
+const renameBtn = document.getElementById("renameBtn");
+
+if (renameBtn) {
+  renameBtn.addEventListener("click", async () => {
+    const caseId = window.selectedCaseId;
+    const user = getLoggedInUser();
+
+    if (!caseId || !user?.uuid) {
+      alert("⚠️ Please select a case first.");
+      return;
+    }
+
+    const caseObj = currentCases.find(
+      (c) => c.id === caseId || c.case_id === caseId
+    );
+    if (!caseObj) {
+      alert("⚠️ Case not found in current list.");
+      return;
+    }
+
+    const newCaseName = prompt("Enter new case name:", caseObj.case_id);
+    if (!newCaseName || newCaseName.trim() === "") return;
+
+    const requestData = [
+      {
+        machine_id: "3a0df9c37b50873c63cebecd7bed73152a5ef616",
+        uuid: user.uuid,
+        caseIntID: caseObj.id
+      },
+      {
+        case_id: newCaseName.trim()
+      }
+    ];
+
+    try {
+      const response = await fetch(`https://live.api.smartrpdai.com/api/smartrpd/case/rename/${caseObj.id}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(requestData)
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      // ✅ 更新本地对象
+      caseObj.case_id = newCaseName.trim();
+      populateTable(currentCases);
+      // ✅ 更新顶部显示
+      document.getElementById("caseNameDisplay").textContent = newCaseName.trim();
+
+      // ✅ 更新左侧列表中的对应项
+      const caseListItems = document.querySelectorAll(".case-list-item");
+      caseListItems.forEach(item => {
+        if (item.dataset.caseId === caseId) {
+          const nameElement = item.querySelector(".case-name");
+          if (nameElement) nameElement.textContent = newCaseName.trim();
+        }
+      });
+
+      // ✅ 更新所有上下文显示项
+      document.querySelectorAll(".case-name-display").forEach(el => {
+        el.textContent = newCaseName.trim();
+      });
+
+      // ✅ 关键：刷新表格
+      if (typeof renderCaseTable === "function") {
+        renderCaseTable(currentCases);
+      }
+
+      alert("✅ Case renamed successfully!");
+
+    } catch (error) {
+      console.error("❌ Failed to rename case:", error);
+      alert(`❌ Failed to rename case: ${error.message}`);
+    }
+  });
+}
+
 });
 
-// function renderSharedUserList() {
-//   const container = document.getElementById("sharedUserList");
 
-//   if (!container) {
-//     console.warn("⚠️ Missing element: #sharedUserList");
-//     return;
-//   }
-
-//   // 清空旧内容
-//   container.innerHTML = "";
-
-//   // 如果没有用户，显示提示
-//   if (!existingUsers || existingUsers.length === 0) {
-//     const emptyItem = document.createElement("li");
-//     emptyItem.textContent = "No users found.";
-//     emptyItem.style.color = "#888";
-//     emptyItem.style.fontStyle = "italic";
-//     container.appendChild(emptyItem);
-//     return;
-//   }
-
-//   // 遍历用户并渲染每个条目
-//   existingUsers.forEach((user) => {
-//     const li = document.createElement("li");
-//     li.className = "shared-user-item";
-
-//     const nameSpan = document.createElement("span");
-//     nameSpan.className = "user-name";
-//     nameSpan.textContent = `👤 ${user.username}`;
-
-//     const roleSpan = document.createElement("span");
-//     roleSpan.className = "user-role";
-//     roleSpan.textContent = user.role;
-
-//     li.appendChild(nameSpan);
-//     li.appendChild(roleSpan);
-//     container.appendChild(li);
-//   });
-// }
 function renderSharedUserList() {
   const container = document.getElementById("sharedUserList");
 
