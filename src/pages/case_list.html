@@ -34,6 +34,7 @@
             <label for="filter-status">FILTER BY STATUS</label>
             <select id="filter-status" class="status-dropdown">
               <option value="all">ALL</option>
+              <option value="na">N/A</option>
               <option value="draft">Draft</option>
               <option value="2d_design_pending">2D design pending</option>
               <option value="2d_design_drafted">2D design drafted</option>
@@ -127,7 +128,7 @@
           <button id="nextBtn">▶</button>
         </div>
 
-        <button class="case-dashboard">CASE DASHBOARD</button>
+        <!-- <button class="case-dashboard">CASE DASHBOARD</button> -->
 
         <div class="case-info">
           <label for="status">STATUS:</label>
@@ -152,11 +153,19 @@
           <p>LAST EDITED: <span id="last-edited"></span></p>
         </div>
 
+        <div class="case-comments">
+          <label for="caseComments">Comments:</label>
+          <textarea
+            id="caseComments"
+            placeholder="Add case comments if any here"
+          ></textarea>
+        </div>
+        
         <div class="start-case-container">
           <button class="start-case-button">START CASE</button>
-          <div class="divider"></div>
+          <!-- <div class="divider"></div> -->
           <!-- 这是新增的直线元素 -->
-          <button class="start-case-toggle">☰</button>
+          <!-- <button class="start-case-toggle">☰</button> -->
         </div>
       </div>
     </div>

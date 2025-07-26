@@ -86,7 +86,6 @@ function populateTable(cases) {
       </td>
     `;
 
-
     row.addEventListener("click", () => {
       handleRowClick(caseItem.id);
 
@@ -126,6 +125,21 @@ async function handleRowClick(caseId) {
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const detail = await response.json();
 
+    // 把 currentCases 中对应行取出来
+const extra = currentCases.find(c => c.id === caseId || c.case_int_id === caseId);
+if (extra) {
+  Object.assign(detail, {
+    new_status   : extra.new_status,
+    expected_date: extra.expected_date,
+    assigned_to  : extra.assigned_to,
+    comments     : extra.comments,
+  });
+}
+
+console.log("extra →", extra);                 // ⭐ 调试 1
+console.log("detail after merge →", detail);   // ⭐ 调试 2
+
+displayCaseDetails(detail);
     displayCaseDetails(detail); // 更新下方基本信息
     document.getElementById("caseNameDisplay").textContent =
       detail.case_id || "N/A"; // ✅ 展示你要的 case_id
@@ -139,6 +153,7 @@ async function handleRowClick(caseId) {
   if (window.innerWidth <= 768) {
     document.querySelector(".container")?.classList.add("show-details");
   }
+  
 }
 
 // 显示基本信息
@@ -151,6 +166,8 @@ function displayCaseDetails(data) {
   document.getElementById("last-edited").textContent = formatDateTime(
     data.last_updated
   );
+  const statusSel = document.getElementById("status");
+  if (statusSel) statusSel.value = apiStatusToValue(data.new_status);
 }
 
 // 日期格式化
@@ -165,7 +182,7 @@ function sortCases(cases, key, order = "asc") {
   return [...cases].sort((a, b) => {
     let valA = a[key] || "",
       valB = b[key] || "";
-     if (key.includes("date")) {
+    if (key.includes("date")) {
       valA = new Date(+valA);
       valB = new Date(+valB);
 
@@ -300,7 +317,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       th.addEventListener("click", () => {
         const sortKey = th.dataset.sort;
         console.log("🔍 正在排序字段：", sortKey);
-
 
         currentSortOrder =
           currentSortColumn === sortKey && currentSortOrder === "asc"
@@ -517,87 +533,121 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-const renameBtn = document.getElementById("renameBtn");
+  const renameBtn = document.getElementById("renameBtn");
 
-if (renameBtn) {
-  renameBtn.addEventListener("click", async () => {
+  if (renameBtn) {
+    renameBtn.addEventListener("click", async () => {
+      const caseId = window.selectedCaseId;
+      const user = getLoggedInUser();
+
+      if (!caseId || !user?.uuid) {
+        alert("⚠️ Please select a case first.");
+        return;
+      }
+
+      const caseObj = currentCases.find(
+        (c) => c.id === caseId || c.case_id === caseId
+      );
+      if (!caseObj) {
+        alert("⚠️ Case not found in current list.");
+        return;
+      }
+
+      const newCaseName = prompt("Enter new case name:", caseObj.case_id);
+      if (!newCaseName || newCaseName.trim() === "") return;
+
+      const requestData = [
+        {
+          machine_id: "3a0df9c37b50873c63cebecd7bed73152a5ef616",
+          uuid: user.uuid,
+          caseIntID: caseObj.id,
+        },
+        {
+          case_id: newCaseName.trim(),
+        },
+      ];
+
+      try {
+        const response = await fetch(
+          `https://live.api.smartrpdai.com/api/smartrpd/case/rename/${caseObj.id}`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(requestData),
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        // ✅ 更新本地对象
+        caseObj.case_id = newCaseName.trim();
+        populateTable(currentCases);
+        // ✅ 更新顶部显示
+        document.getElementById("caseNameDisplay").textContent =
+          newCaseName.trim();
+
+        // ✅ 更新左侧列表中的对应项
+        const caseListItems = document.querySelectorAll(".case-list-item");
+        caseListItems.forEach((item) => {
+          if (item.dataset.caseId === caseId) {
+            const nameElement = item.querySelector(".case-name");
+            if (nameElement) nameElement.textContent = newCaseName.trim();
+          }
+        });
+
+        // ✅ 更新所有上下文显示项
+        document.querySelectorAll(".case-name-display").forEach((el) => {
+          el.textContent = newCaseName.trim();
+        });
+
+        // ✅ 关键：刷新表格
+        if (typeof renderCaseTable === "function") {
+          renderCaseTable(currentCases);
+        }
+
+        alert("✅ Case renamed successfully!");
+      } catch (error) {
+        console.error("❌ Failed to rename case:", error);
+        alert(`❌ Failed to rename case: ${error.message}`);
+      }
+    });
+  }
+
+    /* ===== 状态下拉框保存 ===== */
+  const statusSel = document.getElementById("status");
+if (statusSel) {
+  statusSel.addEventListener("change", async (e) => {
+    const newVal   = e.target.value;           // 下划线或 "na"
+    const apiValue = valueToApiStatus(newVal); // 空格或 ""
+
     const caseId = window.selectedCaseId;
-    const user = getLoggedInUser();
-
+    const user   = getLoggedInUser();
     if (!caseId || !user?.uuid) {
       alert("⚠️ Please select a case first.");
+      e.target.value = "na";
       return;
     }
 
     const caseObj = currentCases.find(
-      (c) => c.id === caseId || c.case_id === caseId
+      (c) => c.id === caseId || c.case_int_id === caseId
     );
-    if (!caseObj) {
-      alert("⚠️ Case not found in current list.");
-      return;
-    }
-
-    const newCaseName = prompt("Enter new case name:", caseObj.case_id);
-    if (!newCaseName || newCaseName.trim() === "") return;
-
-    const requestData = [
-      {
-        machine_id: "3a0df9c37b50873c63cebecd7bed73152a5ef616",
-        uuid: user.uuid,
-        caseIntID: caseObj.id
-      },
-      {
-        case_id: newCaseName.trim()
-      }
-    ];
+    if (!caseObj) return;
 
     try {
-      const response = await fetch(`https://live.api.smartrpdai.com/api/smartrpd/case/rename/${caseObj.id}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(requestData)
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      // ✅ 更新本地对象
-      caseObj.case_id = newCaseName.trim();
+      await postNewStatus(caseObj, apiValue);   // ← 发送空格写法
+      caseObj.new_status = apiValue;            // 本地同步
       populateTable(currentCases);
-      // ✅ 更新顶部显示
-      document.getElementById("caseNameDisplay").textContent = newCaseName.trim();
-
-      // ✅ 更新左侧列表中的对应项
-      const caseListItems = document.querySelectorAll(".case-list-item");
-      caseListItems.forEach(item => {
-        if (item.dataset.caseId === caseId) {
-          const nameElement = item.querySelector(".case-name");
-          if (nameElement) nameElement.textContent = newCaseName.trim();
-        }
-      });
-
-      // ✅ 更新所有上下文显示项
-      document.querySelectorAll(".case-name-display").forEach(el => {
-        el.textContent = newCaseName.trim();
-      });
-
-      // ✅ 关键：刷新表格
-      if (typeof renderCaseTable === "function") {
-        renderCaseTable(currentCases);
-      }
-
-      alert("✅ Case renamed successfully!");
-
-    } catch (error) {
-      console.error("❌ Failed to rename case:", error);
-      alert(`❌ Failed to rename case: ${error.message}`);
+    } catch (err) {
+      console.error("❌ Status update failed:", err);
+      alert("❌ Failed to update status.");
+      e.target.value = apiStatusToValue(caseObj.new_status);
     }
   });
 }
 
 });
-
 
 function renderSharedUserList() {
   const container = document.getElementById("sharedUserList");
@@ -640,7 +690,6 @@ function renderSharedUserList() {
     deleteBtn.title = "Remove user";
     deleteBtn.className = "delete-user-btn";
 
-
     // ⚠️ 如果缺失 uuid，不显示删除按钮
     if (!user.uuid || user.role === "owner") {
       deleteBtn.style.display = "none";
@@ -654,7 +703,7 @@ function renderSharedUserList() {
         const { caseIntID, uuid, machine_id } = window._inviteContext;
         const payload = [
           { machine_id, uuid, caseIntID },
-          { case_id: caseIntID, uuid: user.uuid }
+          { case_id: caseIntID, uuid: user.uuid },
         ];
 
         const res = await fetch(
@@ -662,7 +711,7 @@ function renderSharedUserList() {
           {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
+            body: JSON.stringify(payload),
           }
         );
 
@@ -684,8 +733,6 @@ function renderSharedUserList() {
     container.appendChild(li);
   });
 }
-
-
 
 async function fetchAdditionalCaseDetails(caseList) {
   const logged = getLoggedInUser();
@@ -710,7 +757,7 @@ async function fetchAdditionalCaseDetails(caseList) {
       body: JSON.stringify(body),
     })
       .then((r) => (r.ok ? r.json() : [])) // 失败就当没数据
-      .then((arr) => arr[0]) // 接口返回 [ {...} ]
+      .then((arr) => arr.at(-1)) // 接口返回 [ {...} ]
       .catch(() => undefined);
   });
 
@@ -731,4 +778,44 @@ async function fetchAdditionalCaseDetails(caseList) {
   });
 
   return map; // 只包含真的有附加数据的那些病例
+}
+
+async function postNewStatus(caseObj, newStatus) {
+  const body = [
+    {
+      machine_id: "3a0df9c37b50873c63cebecd7bed73152a5ef616",
+      uuid: getLoggedInUser().uuid,
+      caseIntID: caseObj.id || caseObj.case_int_id,
+    },
+    {
+      assigned_to: caseObj.assigned_to ?? null,
+      due_date: caseObj.expected_date ?? null, // 你的 clean 已改名
+      comments: caseObj.comments ?? null,
+      new_status: newStatus,
+    },
+  ];
+
+  const res = await fetch(
+    "https://live.api.smartrpdai.com/api/smartrpd/additionalcasedetails",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    }
+  );
+
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json(); // ← 如需用返回值可接住
+}
+
+// 把后端的空格写法 -> 下划线写法
+function apiStatusToValue(str) {
+  if (!str) return "na";                  // 后端空/null → N/A
+  return str.toLowerCase().replace(/ /g, "_");
+}
+
+// 把下划线写法 -> 后端需要的空格写法
+function valueToApiStatus(val) {
+  if (!val || val === "na") return "";    // N/A → 空字符串（等同 null）
+  return val.replace(/_/g, " ");
 }

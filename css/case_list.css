@@ -472,3 +472,36 @@ td {
 .shared-user-item {
   position: relative; /* 确保 delete 按钮能定位到右上角 */
 }
+
+.case-comments {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: -5px 0 8px;
+}
+
+.case-comments label {
+  font-weight: bold;
+  font-size: 16px;
+  padding-left: 0px;
+}
+
+#caseComments {
+  width: 100%;
+  min-height: 80px;
+  padding: 8px 10px;
+  font-size: 14px;
+  font-family: inherit;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  resize: vertical;
+  background: #fafafa;
+  color: #333;   /* 与上面靠近 */
+  margin-bottom: 5px;  /* 与下面拉开 */
+}
+
+#caseComments:focus {
+  outline: none;
+  border-color: #88abda;
+  background: #fff;
+}
