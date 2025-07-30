@@ -49,6 +49,10 @@ async function fetchCases() {
 
 // 渲染病例表格
 function populateTable(cases) {
+  const sel = document.getElementById("filter-status");
+  if (sel && sel.value !== "all") {
+    cases = cases.filter(c => apiStatusToValue(c.new_status) === sel.value);
+  }
   const tbody = document.querySelector(".table-body-wrapper .case-table tbody");
   tbody.innerHTML = "";
 
@@ -311,6 +315,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     console.log("[after merge]", cases[0]);
     currentCases = cases; // 放到 merge 之后
     populateTable(currentCases);
+    const filterSel = document.getElementById("filter-status");
+if (filterSel) filterSel.addEventListener("change", () => populateTable(currentCases));
+
 
     // 排序逻辑绑定
     document.querySelectorAll(".sortable").forEach((th) => {
@@ -805,8 +812,95 @@ async function postNewStatus(caseObj, newStatus) {
   );
 
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  /* ★★★ 这三行是新加的 ★★★ */
+await createStatusAlerts(
+  caseObj,
+  getLoggedInUser().username || "",   // from_user
+  newStatus                          // 必要时写成 "" 也行
+).catch(console.error);
   return res.json(); // ← 如需用返回值可接住
 }
+
+
+/*  当状态改完以后，为同一 case 的其它成员创建通知                    */
+async function createStatusAlerts(caseObj, fromUser, newStatus) {
+  const MACHINE_ID = "3a0df9c37b50873c63cebecd7bed73152a5ef616";
+  const me         = getLoggedInUser();
+  const myUuid     = me.uuid;
+  const caseIntID  = caseObj.id || caseObj.case_int_id;
+
+  /* 1️⃣ 拉角色列表 —— 把 owner / coowner / lab 都列进来 */
+  let recipients = [];
+  try {
+    const res = await fetch(
+      "https://live.api.smartrpdai.com/api/smartrpd/role/all/get",
+      {
+        method : "POST",
+        headers: { "Content-Type": "application/json" },
+        body   : JSON.stringify([
+          { machine_id: MACHINE_ID, uuid: myUuid, caseIntID },
+          { case_int_id: caseIntID }
+        ])
+      }
+    );
+    if (res.ok) {
+      const arr = await res.json();
+      recipients = arr
+        .filter(r => ["owner", "coowner", "lab"].includes(r.role))
+        .map(r =>
+          r.username ||
+          (r.email ? r.email.split("@")[0] : "") ||      // 回退到邮箱前缀
+          r.uuid                                          // 最后用 uuid
+        )
+        .filter(Boolean);
+    }
+  } catch (err) {
+    console.warn("[alerts] role fetch failed:", err);
+  }
+
+  /* 2️⃣ 排除自己 & 去重 */
+  recipients = [...new Set(
+    recipients.filter(u =>
+      u && fromUser && u.toLowerCase() !== fromUser.toLowerCase()
+    )
+  )];
+
+  if (!recipients.length) return;   // 没别人需要通知
+
+  /* 3️⃣ 并发写 alerts */
+  await Promise.all(
+    recipients.map(async toName => {
+      const body = [
+        { machine_id: MACHINE_ID, uuid: myUuid, caseIntID },
+        {
+          case_int_id   : caseIntID,
+          to_user       : toName,
+          from_user     : fromUser,
+          new_status    : newStatus,
+          alert_message : "",          // 需要可自定义
+          read_status   : 0,
+          deleted       : 0
+        }
+      ];
+      console.log("[alerts] push to", toName, body);  // 调试用
+
+      try {
+        await fetch(
+          "https://live.api.smartrpdai.com/api/smartrpd/alerts",
+          {
+            method : "POST",
+            headers: { "Content-Type": "application/json" },
+            body   : JSON.stringify(body)
+          }
+        );
+      } catch (e) {
+        console.error("[alerts] create failed:", e);
+      }
+    })
+  );
+}
+
+
 
 // 把后端的空格写法 -> 下划线写法
 function apiStatusToValue(str) {
