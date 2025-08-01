@@ -68,9 +68,7 @@ body, html {
   transition: background-color 0.3s ease;
 }
 
-/* .generate-btn:hover {
-  background-color: var(--hover-blue);
-} */
+
 .generate-btn:hover {
   background-color: var(--hover-blue);
 }
