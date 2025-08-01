@@ -55,7 +55,8 @@ jobs:
             docker rmi smartrpd-case-service || true
 
             echo "Accessing deployment directory..."
-            cd /home/ubuntu/smartrpd_viewer
+            cd ~/smartrpd_viewer      # 或者用 $HOME 变量
+
 
             echo "Building service image..."
             docker build -t smartrpd-case-service .
