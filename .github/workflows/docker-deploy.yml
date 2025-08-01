@@ -15,6 +15,9 @@ jobs:
       - name: Set up job context
         run: echo "Preparing job execution..."
 
+      - name: Checkout repository  # ✅ 必须获取源码
+        uses: actions/checkout@v3
+
       - name: Install tools (jq, curl)
         run: |
           sudo apt-get update -y
@@ -40,13 +43,19 @@ jobs:
           echo "Memory usage:"
           free -m
 
+      # ✅ 新增：安装依赖和构建 dist/
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build project to generate dist/
+        run: npm run build
+
       - name: SSH into server and deploy application services
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.GCP_HOST }}
           username: ${{ secrets.GCP_USER }}
           key: ${{ secrets.GCP_SSH_KEY }}
-
           script: |
             echo "Stopping previous application container..."
             docker rm -f smartrpd-case-service || true
