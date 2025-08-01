@@ -49,19 +49,19 @@ jobs:
 
           script: |
             echo "Stopping previous application container..."
-            docker rm -f rpd-frontend || true
+            docker rm -f smartrpd-case-service || true
 
             echo "Cleaning up existing image..."
-            docker rmi rpd-frontend || true
+            docker rmi smartrpd-case-service || true
 
             echo "Accessing deployment directory..."
             cd /home/ubuntu/smartrpd_viewer
 
             echo "Building service image..."
-            docker build -t rpd-frontend .
+            docker build -t smartrpd-case-service .
 
             echo "Launching updated service container..."
-            docker run -d -p 8090:80 --name rpd-frontend rpd-frontend
+            docker run -d -p 8090:80 --name smartrpd-case-service smartrpd-case-service
 
       - name: Post-deployment health check
         run: |
