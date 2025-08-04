@@ -68,7 +68,7 @@ jobs:
         uses: github/codeql-action/analyze@v3
 
   docker_deploy:
-    name: Docker Deploy
+    name: docker_deploy
     needs: security_scan
     runs-on: ubuntu-latest
     steps:
@@ -129,7 +129,7 @@ jobs:
       - name: Finalize deployment steps
         run: echo "Deployment process finished successfully."
 
-  deploy:
+  deploy_to_GCP:
     runs-on: ubuntu-latest
     needs: docker_deploy
     steps:
