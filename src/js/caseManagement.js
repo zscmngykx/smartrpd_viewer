@@ -913,3 +913,4 @@ function valueToApiStatus(val) {
   if (!val || val === "na") return "";    // N/A → 空字符串（等同 null）
   return val.replace(/_/g, " ");
 }
+

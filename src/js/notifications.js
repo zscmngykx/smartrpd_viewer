@@ -61,19 +61,25 @@
         );
         if (aRes.ok) {
           const list = await aRes.json();
-          if (Array.isArray(list)) allAlerts.push(...list);
+          if (Array.isArray(list)) {
+            // ★ 给每条补上 _cid 兜底（有的返回 case_int_id 可能为空/类型不对）
+            list.forEach(a => {
+              a._cid = cid;
+              if (a.case_int_id == null) a.case_int_id = cid;
+              allAlerts.push(a);
+            });
+          }
         }
       }
 
       // C. 去重（按 alert.id）
       const uniqueAlerts = [...new Map(allAlerts.map(a => [a.id, a])).values()];
 
-      // D. 对缺名字的 case 再兜底查一次
+      // D. 对缺名字的 case 再兜底查一次（保留你的逻辑）
       const missingIds = [...new Set(
         uniqueAlerts.filter(a => !caseNameMap[String(a.case_int_id)])
                     .map(a => a.case_int_id)
       )];
-
       await Promise.all(missingIds.map(async cid => {
         try {
           const r = await fetch(
@@ -127,12 +133,16 @@
       const div = document.createElement("div");
       div.className = "notification-item" + (a.read_status ? "" : " unread");
       div.innerHTML = `
-        <div>
+        <div class="notification-main">
           ${a.read_status ? "" : '<span class="blue-dot"></span>'}
           ${line}
         </div>
         <div class="notification-time">${pretty(a.create_date)}</div>
       `;
+      // ★ 绑定到 DOM（用补齐后的 case_int_id / _cid）
+      div.dataset.alertId   = a.id;
+      div.dataset.caseIntId = a.case_int_id || a._cid;
+
       notifList.appendChild(div);
     });
   }
@@ -147,18 +157,86 @@
     return new Date(t).toLocaleDateString();
   };
 
-  markAllBtn.addEventListener("click", async () => {
-    await fetch(
+  /* ============ 下面是“已读”核心逻辑 ============ */
+
+  // 统一封装：按你 Postman 的正确请求体发起 setreadstatus
+  async function setReadStatus(alertId, caseIntID, read = 1) {
+    const payload = [
+      { machine_id: MACHINE_ID, uuid: user.uuid, caseIntID: Number(caseIntID) },
+      { id: Number(alertId), read_status: Number(read) }
+    ];
+    const res  = await fetch(
       "https://live.api.smartrpdai.com/api/smartrpd/alerts/setreadstatus",
       {
         method : "POST",
         headers: { "Content-Type": "application/json" },
-        body   : JSON.stringify([
-          { uuid: user.uuid },
-          { to_user: USERNAME, all: true }
-        ])
+        body   : JSON.stringify(payload)
       }
     );
-    loadNotifications();
+    const text = await res.text(); // 可能是 mysql info
+    console.debug("[setreadstatus]", payload, text);
+    if (!res.ok) throw new Error(text || "setreadstatus failed");
+    // 可选更严：expect Changed: 1
+    // if (!/Changed:\s*1/.test(text)) throw new Error("not changed: " + text);
+    return text;
+  }
+
+  // 单条点击：先调接口成功，再改 UI（不刷新整块）
+  notifList.addEventListener("click", async (e) => {
+    const item = e.target.closest(".notification-item");
+    if (!item) return;
+    if (!item.classList.contains("unread")) return; // 已读不处理
+    if (item.dataset.busy === "1") return;
+
+    const alertId   = item.dataset.alertId;
+    const caseIntID = item.dataset.caseIntId;
+    if (!alertId || !caseIntID) {
+      console.warn("missing alertId/caseIntID", item.dataset);
+      return;
+    }
+
+    item.dataset.busy = "1";
+    try {
+      await setReadStatus(alertId, caseIntID, 1);
+      item.classList.remove("unread");
+      item.querySelector(".blue-dot")?.remove();
+    } catch (err) {
+      console.error("setReadStatus(one) failed:", err);
+      // 失败就不改 UI
+    } finally {
+      item.dataset.busy = "0";
+    }
+  });
+
+  // 全部已读：逐条调用 setreadstatus（不刷新），最后保持当前列表
+  markAllBtn.addEventListener("click", async () => {
+    const items = Array.from(
+      notifList.querySelectorAll(".notification-item.unread")
+    );
+    if (!items.length) return;
+
+    markAllBtn.disabled = true;
+
+    try {
+      const chunk = 20; // 控制并发
+      for (let i = 0; i < items.length; i += chunk) {
+        await Promise.all(
+          items.slice(i, i + chunk).map(async el => {
+            const id  = el.dataset.alertId;
+            const cid = el.dataset.caseIntId;
+            if (!id || !cid) return;
+            try {
+              await setReadStatus(id, cid, 1);
+              el.classList.remove("unread");
+              el.querySelector(".blue-dot")?.remove();
+            } catch (e) {
+              console.error("setReadStatus(all) failed:", e);
+            }
+          })
+        );
+      }
+    } finally {
+      markAllBtn.disabled = false;
+    }
   });
 })();
