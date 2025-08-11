@@ -64,6 +64,7 @@ function populateTable(cases) {
 
   cases.forEach((caseItem) => {
     const row = document.createElement("tr");
+    row.dataset.caseId   = caseItem.id || caseItem.case_int_id;  
 
     // 🔍 获取附加数据（包括 expected_date, new_status, assigned_to）
     const dueDate = formatDateTime(caseItem.expected_date); // ✅ 与字段统一

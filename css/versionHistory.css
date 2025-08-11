@@ -1,0 +1,79 @@
+/* ===== Version History (clean, icon-only) ===== */
+.version-modal{
+  width:420px;
+  max-width:92vw;
+  padding:20px 20px 8px;
+  border-radius:8px;
+}
+.vh-header{ margin-bottom:4px; }
+.vh-body{
+  max-height:70vh;
+  overflow-y:auto;
+  padding-right:4px;
+}
+
+/* Timeline */
+.vh-list{
+  list-style:none;
+  margin:0;
+  padding-left:24px;
+  position:relative;
+}
+.vh-list::before{
+  content:"";
+  position:absolute;
+  left:12px; top:0; bottom:0;
+  width:2px; background:#ececec;
+}
+.vh-item{
+  position:relative;
+  margin:14px 0;
+  padding-left:6px;
+}
+
+/* ❌ 去掉彩色节点，仅保留竖线 + 左侧操作icon */
+.vh-item::before{ display:none !important; }
+
+/* Row */
+.vh-row{ display:flex; align-items:flex-start; gap:10px; }
+.vh-op{
+  width:20px;
+  flex:0 0 20px;
+  text-align:center;
+  font-size:16px;   /* 适配 Font Awesome 图标大小 */
+  line-height:1.1;
+  margin-top:2px;
+}
+.vh-col{ display:flex; flex-direction:column; gap:2px; min-width:0; }
+
+/* Line 1: title + more */
+.vh-line1{ display:flex; align-items:center; gap:8px; }
+.vh-op-label{ font-size:14px; font-weight:600; color:#222; }
+.vh-more{
+  margin-left:auto;
+  background:transparent; border:none;
+  cursor:pointer; font-size:18px; color:#999; padding:0 4px;
+}
+/* .vh-more:hover{ color:#666; } */
+
+/* Line 2: user + time */
+.vh-line2{ display:flex; align-items:center; gap:8px; font-size:12px; color:#777; }
+.vh-user{ display:inline-flex; align-items:center; gap:6px; }
+
+/* ✅ 头像无底色，仅边框；若想完全隐藏头像，直接改为 display:none */
+.vh-avatar{
+  width:22px; height:22px; border-radius:50%;
+  display:inline-flex; align-items:center; justify-content:center;
+  font-size:11px; font-weight:700; color:#555;
+  background:transparent; border:1px solid #ccc;
+}
+.vh-user-name{ font-weight:500; color:#444; }
+
+.vh-timestamp{ white-space:nowrap; }
+.vh-timestamp::before{ content:"•"; margin:0 4px 0 0; color:#c7c7c7; }
+
+/* Small screens */
+@media (max-width:420px){
+  .version-modal{ width:94vw; }
+  .vh-timestamp{ font-size:11px; }
+}

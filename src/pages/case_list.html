@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="../../css/case_list.css" />
     <link rel="stylesheet" href="../../css/createCase.css" />
     <link rel="stylesheet" href="../../css/notification.css" />
+    <link rel="stylesheet" href="../../css/versionHistory.css" />
     <link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
     <link
       rel="stylesheet"
@@ -297,9 +298,62 @@
       </div>
     </div>
 
+        <!-- 版本历史模态框 -->
+    <div id="versionHistoryModal" class="modal hidden">
+      <div class="modal-content version-modal">
+        <!-- 关闭按钮 -->
+        <span class="close-btn" id="closeVersionModal">&times;</span>
+
+        <!-- 标题 -->
+        <div class="vh-header">
+          <h3 class="modal-title">Version History</h3>
+        </div>
+
+        <!-- 列表 -->
+        <div class="vh-body">
+          <ul id="versionList" class="vh-list">
+            <!-- 示例一项（JS 会动态生成更多） -->
+            <li class="vh-item is-green"
+                data-id="rec_006"
+                data-op="printing"
+                data-user-id="labA"
+                data-ts="2025-04-10T18:10:00+08:00">
+              
+              <div class="vh-row">
+                <!-- 时间轴小图标 -->
+                <div class="vh-op" aria-hidden="true">●</div>
+
+                <!-- 内容列 -->
+                <div class="vh-col">
+                  <!-- 第一行：操作名 + 更多按钮 -->
+                  <!-- <div class="vh-line1">
+                    <span class="vh-op-label">Printing in Progress</span>
+                    <button class="vh-more" title="More actions" aria-label="More actions">⋯</button>
+                  </div> -->
+
+                  <!-- 第二行：用户 + 时间戳 -->
+                  <div class="vh-line2">
+                    <span class="vh-user">
+                      <span class="vh-avatar" style="background:#2ecc71" title="Lab A">LA</span>
+                      <span class="vh-user-name">Lab A</span>
+                    </span>
+                    <time class="vh-timestamp" datetime="2025-04-10T18:10:00+08:00">
+                      10/04/2025 6:10pm
+                    </time>
+                  </div>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+
     <script type="module" src="../js/caseManagement.js"></script>
     <script type="module" src="../js/createCase.js"></script>
     <script type="module" src="../js/notifications.js"></script>
+    <script type="module" src="../js/versionHistory.js"></script>
     <script src="../../dist/bundle.js"></script>
 
     <script>
