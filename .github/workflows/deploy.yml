@@ -51,7 +51,7 @@ jobs:
           name: eslint-report
           path: eslint-report.json
       - name: Lint summary
-        run: echo "✅ Lint job completed (forced pass)."
+        run: echo "✅ Lint job completed."
 
   test:
     runs-on: ubuntu-latest
