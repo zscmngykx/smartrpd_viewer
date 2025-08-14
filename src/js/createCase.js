@@ -343,6 +343,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
           const case_id = caseName;
           const caseIntID = data.id;
+            const user_id = getLoggedInUser()?.username || "";
+  await createCaseHistory({ machine_id, uuid, caseIntID, user_id });
 
           // 📤 上传 Upper STL（如有）
           if (hasUpper) {
@@ -468,6 +470,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const data = await res.json();
         caseIntID = data.id;
         console.log("✅ Case created:", caseIntID);
+        const user_id = getLoggedInUser()?.username || "";
+await createCaseHistory({ machine_id, uuid, caseIntID, user_id });
       } catch (err) {
         console.error("❌ Failed to create case", err);
         alert("Failed to create case.");
@@ -1032,4 +1036,23 @@ async function uploadReferenceImage(
 
     reader.readAsDataURL(file); // ✅ 读取为 Base64
   });
+}
+
+// === 写入 Case History：Created case ===
+async function createCaseHistory({ machine_id, uuid, caseIntID, user_id, action = "Created case" }) {
+  const payload = [
+    { machine_id, uuid, caseIntID },
+    { user_id, action, datetime: Date.now() }   // 当前毫秒时间戳
+  ];
+
+  let body = "";
+  const res = await fetch("https://live.api.smartrpdai.com/api/smartrpd/casehistory", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+  try { body = await res.text(); } catch {}
+
+  console.log("[casehistory][POST]", res.status, body);
+  // 不阻塞主流程：失败只打日志
 }

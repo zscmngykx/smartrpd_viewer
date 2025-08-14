@@ -10,6 +10,64 @@
   if (!user || !user.uuid) return;
   const USERNAME = user.username || (user.email ? user.email.split("@")[0] : "");
 
+  /* ====== 红点工具 & 统计函数（新增） ====== */
+  function setDotVisible(on) {
+    const dot = document.getElementById("notificationDot");
+    if (!dot) return;                // 页面里没放红点元素就直接跳过
+    dot.classList.toggle("show", !!on);
+  }
+
+  // 从后端统计是否存在未读（任一 case 有一条未读就点亮红点）
+  async function refreshNotifDotFromAPI() {
+    try {
+      // 1) 取 case 列表
+      const caseRes2 = await fetch(
+        "https://live.api.smartrpdai.com/api/smartrpd/case/user/findall/get",
+        {
+          method : "POST",
+          headers: { "Content-Type": "application/json" },
+          body   : JSON.stringify([
+            { machine_id: MACHINE_ID, uuid: user.uuid },
+            { uuid: user.uuid }
+          ])
+        }
+      );
+      if (!caseRes2.ok) throw new Error("case fetch failed (dot)");
+      const caseArr2 = await caseRes2.json();
+      const caseIDs2 = Array.isArray(caseArr2) ? [...new Set(caseArr2.map(c => c.id))] : [];
+
+      // 2) 遍历 case 取 alerts，只要发现一条未读就早停
+      let foundUnread = false;
+      for (const cid of caseIDs2) {
+        const aRes2 = await fetch(
+          "https://live.api.smartrpdai.com/api/smartrpd/alerts/getallbytouser",
+          {
+            method : "POST",
+            headers: { "Content-Type": "application/json" },
+            body   : JSON.stringify([
+              { machine_id: MACHINE_ID, uuid: user.uuid, caseIntID: cid },
+              { to_user: USERNAME }
+            ])
+          }
+        );
+        if (!aRes2.ok) continue;
+        const list2 = await aRes2.json();
+        if (Array.isArray(list2)) {
+          for (const a of list2) {
+            if (Number(a.read_status) !== 1) { foundUnread = true; break; }
+          }
+        }
+        if (foundUnread) break;
+      }
+
+      setDotVisible(foundUnread);
+    } catch (err) {
+      console.error("[refreshNotifDotFromAPI] failed:", err);
+      // 失败时保持当前红点状态
+    }
+  }
+  /* ====== 红点工具 & 统计函数（新增结束） ====== */
+
   notifBtn.addEventListener("click", () => {
     notifPopup.classList.toggle("hidden");
     if (!notifPopup.classList.contains("hidden")) loadNotifications();
@@ -18,6 +76,9 @@
     if (!notifPopup.contains(e.target) && e.target !== notifBtn)
       notifPopup.classList.add("hidden");
   });
+
+  // 页面加载完成就先统计一次红点（无需点开弹窗）
+  refreshNotifDotFromAPI();
 
   async function loadNotifications() {
     notifList.innerHTML = "<div style='padding:12px'>Loading…</div>";
@@ -176,8 +237,6 @@
     const text = await res.text(); // 可能是 mysql info
     console.debug("[setreadstatus]", payload, text);
     if (!res.ok) throw new Error(text || "setreadstatus failed");
-    // 可选更严：expect Changed: 1
-    // if (!/Changed:\s*1/.test(text)) throw new Error("not changed: " + text);
     return text;
   }
 
@@ -200,6 +259,9 @@
       await setReadStatus(alertId, caseIntID, 1);
       item.classList.remove("unread");
       item.querySelector(".blue-dot")?.remove();
+
+      // ★ 新增：单条设已读后刷新红点
+      refreshNotifDotFromAPI();
     } catch (err) {
       console.error("setReadStatus(one) failed:", err);
       // 失败就不改 UI
@@ -237,6 +299,8 @@
       }
     } finally {
       markAllBtn.disabled = false;
+      // ★ 新增：批量设已读后刷新红点
+      refreshNotifDotFromAPI();
     }
   });
 })();

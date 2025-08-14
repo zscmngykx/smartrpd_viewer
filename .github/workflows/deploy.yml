@@ -17,9 +17,17 @@ jobs:
           echo "Installing dependencies..."
           npm install
 
-  test:
+  lint:
     runs-on: ubuntu-latest
     needs: build
+    steps:
+    - uses: actions/checkout@v3
+    - run: npm install
+    - run: npx eslint . --ext .js,.jsx,.ts,.tsx
+
+  test:
+    runs-on: ubuntu-latest
+    needs: lint
     steps:
       - name: Checkout source code
         uses: actions/checkout@v3
