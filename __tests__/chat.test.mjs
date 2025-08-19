@@ -69,4 +69,3 @@ describe('handleSendMessage()', () => {
     expect(state.pendingImageBase64).toBe(null);
   });
 });
-// 
