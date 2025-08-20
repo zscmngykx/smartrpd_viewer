@@ -66,6 +66,35 @@
       // 失败时保持当前红点状态
     }
   }
+
+    /* ====== 🔴 红点自动轮询（独立模块） ====== */
+  let notifDotTimer = null;
+  let notifDotInFlight = false;
+
+  async function notifDotTick() {
+    if (notifDotInFlight) return;   // 防并发
+    notifDotInFlight = true;
+    try {
+      await refreshNotifDotFromAPI(); // 复用你已有的统计函数
+    } finally {
+      notifDotInFlight = false;
+    }
+  }
+
+  // 启动/停止接口：完全独立，不影响原有功能
+  function startNotificationDotPolling(intervalMs = 5000) {
+    if (notifDotTimer) return;      // 已启动则忽略
+    // 先立即跑一次，再进入节拍
+    notifDotTick();
+    notifDotTimer = setInterval(notifDotTick, intervalMs);
+  }
+  function stopNotificationDotPolling() {
+    if (!notifDotTimer) return;
+    clearInterval(notifDotTimer);
+    notifDotTimer = null;
+  }
+  /* ====== 🔴 红点自动轮询（独立模块）结束 ====== */
+
   /* ====== 红点工具 & 统计函数（新增结束） ====== */
 
   notifBtn.addEventListener("click", () => {
@@ -79,6 +108,9 @@
 
   // 页面加载完成就先统计一次红点（无需点开弹窗）
   refreshNotifDotFromAPI();
+    // 启动红点轮询：每 5 秒检查一次
+  startNotificationDotPolling(5000);
+
 
   async function loadNotifications() {
     notifList.innerHTML = "<div style='padding:12px'>Loading…</div>";
